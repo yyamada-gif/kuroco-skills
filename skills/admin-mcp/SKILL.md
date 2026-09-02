@@ -528,6 +528,21 @@ topics の項目ではなくファイルマネージャーのツリー（`files/
 - `storage: "S3"` を付けるとサイトの S3 バケットの `files/temp/` に直接置かれる（GCS サイトでは不可）
 - 小さいファイル（16MB まで）はインライン data URI でも受理される
 
+### ファイルマネージャーからの一括ダウンロード（`file_manager-list` の `download: true`）
+
+ディレクトリ配下をまとめて取り出すときは、`file_manager-list` に `download: true` を付ける。一覧の代わりに、`directory` 配下（サブディレクトリ含む）を 1 本の zip にした一時 URL が返る。
+
+```json
+{ "storage": "kurocofiles_public", "directory": "docs/2026", "download": true }
+// → { "directory": "files/user/docs/2026/", "download": { "download_url": "...", "filename": "2026.zip", "size": 12345, "entries": 8, "expiration_unix": ... } }
+```
+
+- zip 内のエントリパスは `directory` からの相対パス。一覧に出ないもの（隠しファイル・フォルダ、閲覧制限で見えないフォルダ）は zip にも入らない
+- 上限はアップロードの zip 展開と同じ **1000 ファイル / 展開後 500MB**。超えるツリーは拒否されるので、サブディレクトリ単位で分けて取り出す
+- `download_url` の有効期限は **10 分**。発行したらすぐ取得する
+- 閲覧制限ファイル（`kurocofiles_private` / `cloud_private`）の中身を MCP から読める唯一の経路。`file_manager-list` が返す `url` は管理画面ログインが必要なので、エージェントからはこちらを使う
+- クラウドストレージも一時バケットも無いサイトでは一時 URL を発行できず、`download` は拒否される
+
 ---
 
 ## 管理画面: Admin MCP 情報ページ
