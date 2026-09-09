@@ -751,6 +751,7 @@ class: `topics_list_group1`
 
 ## 関連ドキュメント
 - [管理画面プラグインを使ってKuroco管理画面に任意のCSSを適用する](/ja/docs/tutorials/apply-css-to-a-kuroco-management-screen-with-the-plugin/)
+- [管理画面プラグインで利用可能なスロット一覧](/ja/docs/reference/management-plugin-slot/)
 
 
 ---

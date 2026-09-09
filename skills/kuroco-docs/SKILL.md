@@ -2,7 +2,7 @@
 name: kuroco-docs
 metadata:
   author: Diverta inc.
-  version: "2.2.2"
+  version: "2.2.3"
   lastUpdated: "2026-08-27"
 description: Kuroco公式ドキュメント（チュートリアル・リファレンス・管理画面ガイド・FAQ）をスキル同梱のファイルから検索・参照する。Kurocoの機能の使い方、設定方法、仕様、トラブルシューティングのほか、「Kurocoに〜という機能・資料はあるか」という有無の確認など、公式ドキュメントに基づく正確な情報が必要なときに使用。
 ---

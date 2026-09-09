@@ -180,7 +180,7 @@ Kuroco と Vite / Nuxt.js / Next.js の統合パターンおよび KurocoFront �
 **KurocoFront デプロイ:**
 - `kuroco_front.json` の設定
 - GitHub リポジトリ連携によるデプロイ
-- Admin MCP からの直接デプロイ（zip アップロード → `kuroco_front-deploy` → `kuroco_front-history` で反映確認）
+- Admin MCP からの直接デプロイ（zip アップロード → `KurocoFront-deploy` → `KurocoFront-history` で反映確認）
 - プレビューデプロイ（`is_preview`）/ 本番デプロイ、上書き時の注意点
 
 ### 使用例
@@ -196,7 +196,7 @@ Kuroco と Vite / Nuxt.js / Next.js の統合パターンおよび KurocoFront �
 
 ### 対応するキーワード
 
-`Vite` `Nuxt3` `Next.js` `App Router` `SPA` `SSG` `SSR` `useAsyncData` `$fetch` `composable` `useAuth` `KurocoPages` `credentials include` `サードパーティCookie` `XSS` `KurocoFront` `kuroco_front.json` `GitHub連携` `kuroco_front-deploy` `kuroco_front-history` `artifact_url` `stage_url` `is_preview` `CI/CD`
+`Vite` `Nuxt3` `Next.js` `App Router` `SPA` `SSG` `SSR` `useAsyncData` `$fetch` `composable` `useAuth` `KurocoPages` `credentials include` `サードパーティCookie` `XSS` `KurocoFront` `kuroco_front.json` `GitHub連携` `KurocoFront-deploy` `KurocoFront-history` `artifact_url` `stage_url` `is_preview` `CI/CD`
 
 ### フレームワーク別の推奨
 
@@ -213,7 +213,7 @@ Kuroco と Vite / Nuxt.js / Next.js の統合パターンおよび KurocoFront �
 | 方法 | 内容 |
 |------|------|
 | GitHub 連携 | 管理画面 [KurocoFront] → GitHub リポジトリ連携。push 時に GitHub Actions でビルドし、成果物をデプロイ |
-| Admin MCP からの直接デプロイ | ビルド成果物の zip をアップロードし、`kuroco_front-deploy` でデプロイ（非同期）。`kuroco_front-history` で反映を確認 |
+| Admin MCP からの直接デプロイ | ビルド成果物の zip をアップロードし、`KurocoFront-deploy` でデプロイ（非同期）。`KurocoFront-history` で反映を確認 |
 
 :::caution 上書きについて
 1 つのドメインで公開されるのは現行デプロイ 1 つだけで、新しいデプロイは既存の公開内容を置き換えます。本番反映前に `is_preview: true` でのプレビューデプロイによる確認を推奨します。
@@ -229,7 +229,7 @@ Kuroco の Smarty テンプレートの完全リファレンスおよびバッ�
 ### 機能
 
 **Smarty プラグインリファレンス:**
-- 210 個のプラグインの完全なリファレンス
+- 151 個のプラグインの完全なリファレンス
 - カテゴリ別索引（API / 文字列 / 配列 / フォーム / 認証 / 外部連携 / ファイル / Vue.js）
 - Smarty 基本構文（変数代入、ループ、条件分岐、修飾子）
 - セキュリティ設定（IF_FUNCS / MODIFIER_FUNCS）
@@ -1416,6 +1416,7 @@ Admin API と同等の管理操作を、JSON-RPC 2.0 ベースの **MCP サー�
 |---------|--------------|
 | `mcp:tools.read` | 参照系ツールの実行と `tools/list` |
 | `mcp:tools.write` | 更新系ツールの実行と `tools/list`（参照系も実行できます） |
+| `mcp:tools.all` | すべてのツールの実行。ただしグループ（権限）や汎用Smartyバッチの作成・更新・削除、OAuth認可サーバーの設定変更と発行済み認可の失効、メンバーへのスーパーユーザーグループの付与、特権付き静的トークンの発行、アクセス制限（IPアドレス）の変更、カスタム処理のトリガー設定の変更はできません（詳細は[OAuth Authorization Server](/ja/docs/management/sso-oauth-idp/)を参照）。 |
 | `mcp:admin` | すべてのツールの実行。トークンを発行するツールはこのスコープでのみ利用できます。 |
 | `mcp:tools.list` | `tools/list` のみ（ツールは実行できません） |
 
@@ -1434,7 +1435,7 @@ Admin MCP エンドポイントは、管理画面や KurocoFiles の IP アド�
 
 | 項目 | 内容 |
 |------|------|
-| 対象 | Admin MCP エンドポイント（`/direct/rcms_api/admin_mcp/`、モジュールスコープ付き URL と `?MODE=tools` を含む）、およびファイルアップロード用エンドポイント（`/direct/rcms_api/mcp_upload/`）。 |
+| 対象 | Admin MCP エンドポイント（`/direct/rcms_api/admin_mcp/`、モジュールスコープ付き URL と `?MODE=tools` を含む）。 |
 | 対象の認証経路 | Bearer トークン（OAuth アクセストークン）と管理セッション Cookie の両方。 |
 | 対象外 | `?MODE=protected_resource_metadata`（RFC 9728 のメタデータ配信）。認証不要の公開エンドポイントのまま維持されます。 |
 | 判定タイミング | 認証よりも前に判定されます。許可されない IP アドレスからのリクエストは、トークンの正否にかかわらず `403` を返します。 |
@@ -1461,6 +1462,7 @@ POST /direct/rcms_api/admin_mcp/x/all                                # 全ツー
 POST /direct/rcms_api/admin_mcp/x/topics_group_1,topics_group_5,member,services
 POST /direct/rcms_api/admin_mcp/x/topics_group_1,topics_group_5/readonly
 POST /direct/rcms_api/admin_mcp/x/topics_group                       # グループ定義 CRUD
+POST /direct/rcms_api/admin_mcp/x/sitebuild                          # サイト構築用のプリセット
 ```
 
 :::caution
@@ -1477,11 +1479,13 @@ POST /direct/rcms_api/admin_mcp/x/topics_group                       # グルー
 | `services` | サービスモデル（Email、Slack など）。 |
 | `<mt>` | その他任意の管理モジュール（`member`、`ec`、`batch` など）。 |
 | サブモジュール | 1 つのモジュールの一部のコントローラだけを公開する識別子（`site_management_plugin`）。アクセス範囲だけが変わり、ツール名は `<mt>` 指定時と同じです。 |
+| `sitebuild` | サイト構築用に選定したツールのプリセットです。コンテンツ定義・コンテンツ、API 定義、サイト設定、カスタム処理、フロントエンドのデプロイに関するツールを公開し、稼働中サイトの運用に関するツール（請求・利用量、サイトの追加、フォームの受信データ、メールマガジン、コメント、EC、クローラー、メンバーの検索条件と発行済み資格情報、アクセス系のログ）は公開しません。 |
 
 モジュール指定時の挙動:
 
 - 更新系の操作は、操作ごとに個別のツールになります（追加 / 更新 / 削除など）
 - レコードが 1 件も無いモジュールでは、参照系のツールが表示されません（追加のツールのみが表示されます）
+- サイトの構成上そのサイトでは実行できないツールは表示されません（Kuroco Edge を経由していないサイトの Kuroco Edge のキャッシュ削除、連携を有効にしていない Slack・LINE のサービスメソッド、子サイトを持たないサイトのサイト環境管理など）
 
 パスに `/readonly` を付与すると、書き込み系ツールはリストから除外されます。
 
@@ -1523,6 +1527,8 @@ HTTP POST + JSON-RPC 2.0。`initialize` で交渉するプロトコルバージ�
 | `prompts/list` | 空の一覧を返します（プロンプトは提供していません） |
 | `resources/list` | 空の一覧を返します（リソースは提供していません） |
 
+`initialize` のレスポンスでは `tools.listChanged` を通知します。ツールの一覧や入力スキーマが変化する操作（コンテンツ定義の追加など）を実行すると、`notifications/tools/list_changed` を送信し、あわせてツールの実行結果にも一覧が古くなった旨を追記します。この通知を受け取った場合は、`tools/list` を再取得してください。
+
 ツール名は `{resource}-{verb}` の形式です。リソースは操作対象のレコード種別を表し、モジュール名とは一致しないことがあります（例: `site` モジュールには `kuroco_front`、`usage`、`const` などのリソースが含まれます）。ハイフンはリソースと動詞の区切りとして 1 つだけ使われ、リソース名の中の区切りはアンダースコアのままです（`topics_group-create`）。
 
 | 動詞 | 操作 | 例 |
@@ -1530,15 +1536,16 @@ HTTP POST + JSON-RPC 2.0。`initialize` で交渉するプロトコルバージ�
 | `-list` | 一覧・検索 | `topics-list` |
 | `-get` | ID 指定で 1 件取得 | `topics-get` |
 | `-create` | 追加 | `topics-create` |
-| `-update` | 更新（1 件、または `ids` / `filter` で複数件） | `topics-update` |
+| `-update` | 更新（1 件、または `ids` / `filter` で複数件、並び替えは `rows` 引数で表現） | `topics-update` |
 | `-delete` | 削除（同上） | `topics-delete` |
 | `-validate` | 保存せず入力チェックのみ実行 | `topics-validate` |
 | `-import` | CSV や行データの取り込み | `topics-import` |
-| `-export` | ダウンロード | `topics-export` |
 | その他の管理操作 | 管理操作の名称がそのまま動詞になります | `topics-accept` |
-| サービスメソッド | `{service}-{method}` | `email-send` |
+| サービスメソッド | `{service}-{method}`（サービスモデル名は小文字になります） | `email-send` |
 
-固定名のツールが 2 つあります。`topics-describe`（コンテンツ定義の構造を返します）と `files-create_upload`（[ファイルのアップロード](#ファイルのアップロード)を参照）です。
+固定名のツールが 2 つあります。`topics-describe`（コンテンツ定義の構造を返します）と `files-create_temp_upload_url`（[ファイルのアップロード](#ファイルのアップロード)を参照）です。
+
+エクスポート（CSV・JSON のダウンロード）は専用のツールではなく、対応する取得ツールの `download` 引数で実行します（例: `topics-list`、`member-list`）。添付ファイルの ZIP は `download_attachments` 引数です。いずれもレスポンスに行データは返らず、一時的なダウンロード URL が `download.download_url` に返ります。両方を指定した場合は `download` が優先されます。フォームの表示設定には取得（list/get）ツールがなく、エクスポートには専用の `inquiry_disp-export` ツールを使用します。
 
 対象件数（1 件 / 複数）や実行方法（同期 / ジョブ）はツール名ではなく引数で指定します。このため一括処理は専用のツール名（`bulk_delete` など）を持ちません。`{resource}-delete` / `{resource}-update` では引数で対象（`ids` または `filter`）を選択し、ガードとして `dry_run` / `expected_cnt` を指定できます。ジョブ実行に対応するツールでは `async` 引数で同期実行とジョブ実行を切り替えます（`{resource}-import` など）。
 
@@ -1559,20 +1566,18 @@ Content-Type: application/json
 
 ### ファイルのアップロード
 
-コンテンツの画像・ファイル項目に大きなファイルを設定する場合は、`files-create_upload` ツールでアップロード先を発行し、本文とは別にアップロードします。小さなファイルは `data:` URI としてそのまま値に渡すこともできます。
+コンテンツの画像・ファイル項目は、ファイルを `data:` URI（RFC 2397）としてそのまま値に渡せます。`{"data": "data:...", "desc": "キャプション"}` の形式で、キャプションもあわせて設定できます。この方式で渡せるのは 16MB までです。
 
-1. `files-create_upload` を呼び出すと、不透明な参照（`file_ref`、`kuroco-file:` で始まる文字列）とアップロード先（`upload.method` = `PUT`、`upload.url`）が返ります。
-2. `upload.url` にファイルのバイト列を `PUT` します。`upload.url` が `307` を返す場合は、`GET` でリダイレクト先（`Location`）を解決してから、その URL に `PUT` してください。リダイレクトする URL 自体への `PUT` はエッジで `405` になります。
-3. `topics-create` / `topics-update` の画像・ファイル項目の値に `file_ref` を渡します（`{"file_id": "kuroco-file:...", "desc": "キャプション"}` の形式も利用できます）。
+16MB を超えるファイルや、`data:` URI に変換せずに送信するファイルは、`files-create_temp_upload_url` ツールで一時保存領域へのアップロード先を発行し、本文とは別にアップロードします。
 
-アップロード先は環境によって異なります。S3 の一時バケットが構成されている場合は S3 の presigned URL（短縮 URL の場合は上記の `307` 解決が必要）、構成されていない場合は Kuroco の以下のエンドポイントです。参照はアカウントに紐づき、有効期限があります。
+1. `files-create_temp_upload_url` を呼び出します。`file_size`（バイト数）と `ext`（拡張子）の指定が必要です。レスポンスには `file_id`、アップロード用の presigned URL（`presigned_url`）と、その短縮 URL（`presigned_short_url`）、有効期限（`expiration`、`expiration_unix`）が含まれます。
+2. `presigned_url` にファイルのバイト列を `PUT` します。`presigned_short_url` は `presigned_url` への `307` リダイレクトのため、そのまま `PUT` するとエッジで `405` になる場合があります。この場合は `GET` でリダイレクト先（`Location`）を解決してから、その URL に `PUT` してください。
+3. `topics-create` / `topics-update` の画像・ファイル項目の値に、レスポンスの `file_id` を渡します（`{"file_id": "files/temp/...", "desc": "キャプション"}` の形式も利用できます）。
 
-```
-PUT /direct/rcms_api/mcp_upload/<token>
-```
+宣言した `file_size` と `ext` は、アップロード先の発行時と、ファイルをコンテンツに取り込む時の両方で検証されます。アップロード先は `storage` 引数で選択でき、既定は共有の一時保存領域、`S3` を指定するとサイト自身の S3 バケットになります（共有の一時保存領域が構成されていないサイトでは `S3` の指定が必要です。GCS のサイトでは利用できません）。
 
 :::note
-`files-create_upload` は、コンテンツのレコード操作ツールを含むバンドルにのみ表示されます。`/readonly` のバンドルでは表示されません。
+`files-create_temp_upload_url` は、コンテンツのレコード操作ツールを含むバンドルにのみ表示されます。書き込み系のツールのため、`/readonly` のバンドルでは表示されません。また、presigned URL の発行先が構成されていないサイトでは表示されません。
 :::
 
 ### OpenAPI 定義の取得

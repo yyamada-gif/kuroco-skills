@@ -447,7 +447,7 @@
 メンバー編集画面右上の[その他]から[更新履歴]をクリックすると、編集履歴が一覧で確認できます。  
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/bea24d1ffb4e1efe84694ec457a1503b.png)
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/c7edc070b3afee5e0fd1f1da2e09dde2.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/85d86208cafb1ba56c0ea8968921b383.png)
 
 |項目 |説明 |
 | :--- | :--- |

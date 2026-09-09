@@ -2,8 +2,8 @@
 name: kuroco-content-structure
 metadata:
   author: Diverta inc.
-  version: "2.0.0"
-  lastUpdated: "2026-08-27"
+  version: "2.0.1"
+  lastUpdated: "2026-09-02"
 description: Kurocoのコンテンツ定義（TopicsGroup）を設計し、Admin MCPの topics_group-create で作成する。設計では TopicsGroup の分割、JSON項目によるフィールド圧縮、マスタを CSVテーブルとリレーションのどちらで持つか、カテゴリ・タグ・リレーションの使い分け、ext_slug の命名を決め、作成ではフィールド型（ext_type）ごとのプロパティ、繰り返しフィールドグループ、閲覧・編集制限、書き込み後の読み戻し検証を扱う。コンテンツ定義やカスタムフィールドの設計相談・新規作成・フィールド追加で使用。
 ---
 
@@ -287,7 +287,7 @@ Properties shared by all field types:
 | 2 | `select` | Select box (single choice) |
 | 4 | `image` | Image upload |
 | 5 | `checkbox` | Checkbox (multiple choice) |
-| 6 | `wysiwyg` | WYSIWYG rich text editor |
+| 6 | `wysiwyg` | WYSIWYG rich text editor — 編集者に HTML を意識させずに書かせたいとき。エディタが HTML を再構成する |
 | 7 | `link` | URL link input |
 | 8 | `date` | Date/datetime picker |
 | 9 | `file` | File upload |
@@ -295,7 +295,7 @@ Properties shared by all field types:
 | 11 | `location` | Geolocation (map) |
 | 13 | `textauto` | Autocomplete text |
 | 20 | `relation` | Relation (reference to other records) |
-| 21 | `html` | HTML code input |
+| 21 | `html` | HTML code input — HTML をそのまま書きたい・整形させたくないとき。再構成は起きない（サニタイズは 6 と同様に効く） |
 | 27 | `s3file` | Amazon S3 file upload — **not listed by `topics_group-describe`; MCP creation unverified** |
 | 28 | `json` | JSON data input |
 | 29 | `csvtable` | CSV table |
@@ -303,11 +303,11 @@ Properties shared by all field types:
 | 31 | `vimeo` | Vimeo video upload — **not listed by `topics_group-describe`; MCP creation unverified** |
 | 32 | `api` | External API integration |
 | 33 | `gcsfile` | Google Cloud Storage file upload — **not listed by `topics_group-describe`; MCP creation unverified** |
-| 34 | `counter` | Auto-increment counter |
+| 34 | `counter` | Auto-increment counter — 加算が更新履歴を通らないので、高頻度で数え上げる値に向く |
 | 35 | `number` | Numeric input |
 | 36 | `bool` | Boolean (ON/OFF toggle) |
 | 37 | `csvtable_checkbox` | CSV table checkbox |
-| 38 | `block_editor` | Block-based content editor — **only as the first field of a field group** |
+| 38 | `block_editor` | Block-based content editor — **only as the first field of a field group**。検索対象にできないが、レコードごとに構成が変わる本文に向く |
 
 Per-type properties (`placeholder`, `options`, `module`, `csv_master_id`, …), the repeatable-group example, and three complete payloads (news / product catalog / events) are in **[references/field-types.md](references/field-types.md)** — read the section for each type you are about to use before building the `fields` array.
 
@@ -338,6 +338,8 @@ Field groups allow you to bundle multiple fields into a repeatable section.
 **Important**: Fields inside a group must have `repetitions: 1`.
 
 **Site-wide ceiling**: the maximum `group_repetitions` a site allows is reported by `whoami`'s `site.limits.topics_ext_group_loop` (`{current, max}`, `max` is 99). Don't assume a number — check `whoami` before setting a large `group_repetitions`. `current` is raisable up to `max` via `admin_setting-update` (see `/kuroco-admin-mcp`).
+
+**更新の粒度は項目単位で、繰り返しの中は部分更新できない**: `topics-update` で送らなかった項目は保持されるが、**繰り返し項目は送った時点で全スロットが送った内容に置き換わる**。3回分あるうち2回目だけを差し替えることはできず、1スロットだけ変えたいときも `topics-get` で現在値を読んでから全スロットを組み立てて送ることになる。**一部だけを頻繁に書き換える項目は、繰り返しにせず別の項目や別レコードに分けることを設計時に検討する。**
 
 ## Adding fields to an existing definition
 

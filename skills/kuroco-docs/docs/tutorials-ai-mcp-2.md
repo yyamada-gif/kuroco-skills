@@ -49,7 +49,7 @@ Kuroco Skills をインストールすると、AI エージェントが Kuroco �
 | **kuroco-app-builder** | アプリ・サイトをゼロから構築するワークフロー（モックファースト → コンテンツ定義 → API → 実データ接続 → デプロイ） |
 | **kuroco-api-content** | API 設計・認証（Cookie / 動的・静的アクセストークン）、CORS、コンテンツ CRUD、フィルタークエリ |
 | **kuroco-frontend-integration** | Vite / Nuxt.js / Next.js 統合、SPA/SSG/SSR、認証実装、KurocoFront へのデプロイ |
-| **kuroco-server-processing** | Smarty プラグイン・構文リファレンス（210 プラグイン）、バッチ処理、Webhook、トリガー、外部システム連携方式の設計（直接呼び出し / プロキシ / 取り込み、シークレット・トークン管理） |
+| **kuroco-server-processing** | Smarty プラグイン・構文リファレンス（151 プラグイン）、バッチ処理、Webhook、トリガー、外部システム連携方式の設計（直接呼び出し / プロキシ / 取り込み、シークレット・トークン管理） |
 | **kuroco-admin-mcp** | Admin MCP（管理 MCP サーバ）への接続設定、OAuth / CIMD 認証、スコープ、ツール利用 |
 | **kuroco-content-structure** | コンテンツ構造の設計判断（コンテンツ定義の分割、JSON 項目によるフィールド圧縮、マスタデータの表現、分類の持ち方、`ext_slug` の命名方針）と、MCP ツールによるコンテンツ定義（TopicsGroup）の作成・フィールドタイプリファレンス |
 | **kuroco-auth-design** | 会員認証・権限の設計判断（会員グループ、登録フロー、アクセス制限のスコープ、パスワードポリシー、エンタープライズ SSO / SCIM 連携） |

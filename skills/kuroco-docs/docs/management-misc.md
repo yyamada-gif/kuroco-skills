@@ -124,23 +124,48 @@ Amazon SESの連携機能のための設定をします。
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/e9b8b435ce59757bd0b0a62d4da9e93c.png)
 
 ## 項目説明
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/7be961aca734aa9ad551626366149396.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/6431c8957068a1e468c24277fba1f63c.png)
 
 |項目   |説明  |
 | :--- | :--- |
 |メモ|バックアップにメモを残すことができます。|
 |バックアップする|バックアップファイルを作成します。|
 |リロード|画面を更新します。<br/>[バックアップする]をクリックしてからバックアップが完了するまで時間がかかります。[リロード]ボタンをクリックして画面を更新し、バックアップ完了しているかどうかを確認してください。|
+|自動バックアップ|自動で取得されたバックアップは、メモ欄に「自動バックアップ」と表示されます。詳細は[自動バックアップ](#自動バックアップ)を参照してください。|
 |ステータス|バックアップの処理が処理中か完了か確認ができます。|
 |バックアップ日時|バックアップを作成した日時を表示します。|
 |メモ|バックアップに残したメモが表示されます。|
 |サイズ|バックアップファイルの容量をファイルの容量/データベースの容量の形式で表示します。|
+|有効期限 <VersionLabel version="BETA" />|バックアップの有効期限を表示します。有効期限が設定されていないバックアップは「有効期限なし」と表示されます。<br/>有効期限を過ぎたバックアップは一覧に表示されません。変更方法は[有効期限の変更](#有効期限の変更)を参照してください。|
 |リンク|[ダウンロードURL取得する]をクリックするとバックアップをダウンロードするためのリンクを表示します。<br/>ダウンロードリンクの有効期限は1時間となっており、1時間経過後は再び[ダウンロードURL取得する]のボタンが表示されます。|
 
-## 一括削除
+:::caution
+ダウンロードURLの取得はサイト全体のデータの持ち出しに、削除や有効期限の前倒しは復元点の破棄にあたるため、スーパーユーザーのみ実行できます。<VersionLabel version="BETA" />  
+スーパーユーザー以外のユーザーには、一覧のチェックボックス・[ダウンロードURL取得する]・[削除する]・[有効期限 保存する]は表示されません。
+:::
+
+## 一括処理
+
+複数のバックアップに対して、削除や有効期限の変更を一括で行うことができます。
+
+### 削除
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/3b93623fcb6cd7e1bc9d08e664a688f3.png)
 
 一覧の左端のチェックボックスにチェックを入れて、[削除する]をクリックすると、選択したバックアップを一括で削除します。
+
+### 有効期限の変更 <VersionLabel version="BETA" />
+
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/f430431971786f201d38599edee33e9e.png)
+
+バックアップの有効期限を変更する場合は、以下の手順で操作します。
+
+1. 一覧の[有効期限]列で、変更したいバックアップの[変更する]にチェックを入れます。チェックを入れると日付の入力欄が有効になります。
+2. 日付を入力します。有効期限をなくす場合は、日付を空欄にします。
+3. [有効期限 保存する]をクリックし、確認ダイアログで[OK]をクリックします。
+
+:::note
+- [変更する]にチェックを入れた行のみ保存されます。チェックを入れていない行の日付は変更されません。
+:::
 
 ## 自動バックアップ
 バックアップ画面から自動バックアップを設定すると、毎日1回、自動でバックアップを取得できます。設定した保存日数を過ぎた自動バックアップは自動的に削除されます。
@@ -235,8 +260,8 @@ Amazon SESの連携機能のための設定をします。
 
 ### 項目説明
 
-<a><img src="https://t.gyazo.com/teams/diverta/263abe3290b92d8ffd5b299d151ee0d5.png" style="width:600px; max-height:none;" /></a>
-<a><img src="https://t.gyazo.com/teams/diverta/277c06e44785bb26232df067be9b2189.jpg" style="width:600px; max-height:none;" /></a>
+<a><img src="https://t.gyazo.com/teams/diverta/263abe3290b92d8ffd5b299d151ee0d5.png" style={{ width: 600, maxHeight: 'none' }} /></a>
+<a><img src="https://t.gyazo.com/teams/diverta/277c06e44785bb26232df067be9b2189.jpg" style={{ width: 600, maxHeight: 'none' }} /></a>
 
 |項目   |説明  |
 | :--- | :--- |
@@ -779,7 +804,7 @@ Firestoreを確認すると、下記のように表示されます。
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/0cf56d8ddcba3af30c717914d19204cc.png)
 
 #### カスタムメンバーフィルター更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/44de0292f857a95ee9ecb45ca716e99b.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/06ae7b76f00c97a8d283585798e2932a.png)
 
 |項目   |説明  |
 | :--- | :--- |
@@ -854,7 +879,7 @@ Firestoreを確認すると、下記のように表示されます。
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/eeff6cc6d3c2d070abb3cfa968bec1a4.png)
 
 #### カテゴリ編集更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/56b398187e22934c22e81b286faf2e44.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/5c3139380cec4ab8227ecc35ce15e5ef.png)
 
 |項目 |説明 |
 | :--- | :--- |
@@ -1738,6 +1763,27 @@ SendGridのWebhookリファレンスは、SendGrid -> [Event Webhook Reference](
 |バックアップする|選択したサイトそれぞれのバックアップを取得します。|
 |削除する|選択したサイトを削除します。<br/>親サイトはサイト一覧から削除できません。サブサイトをすべて削除した後に[アカウント設定](/ja/docs/management/account/)からご対応ください。|
 
+### 同期バッチの状況 <VersionLabel version="BETA" />
+
+サイト一覧の下に、[同期する]や[絞り込んだサイトを同期]で登録された同期バッチの状況が表示されます。同期を登録したサイトの処理が、待機中・実行中・完了のいずれの状態かをこのセクションで確認できます。
+
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/12dc4c8ea2f0df8ab26b04d20b16609f.png)
+
+|項目   |説明  |
+| :--- | :--- |
+|サイトキー|同期先サイトのサイトキーを表示します。|
+|サイト名|同期先サイトのサイト名を表示します。|
+|同期元サイトキー|同期元のサイトキーを表示します。同期元サイトが削除されている場合は空欄になります。|
+|ステータス|同期バッチのステータスを表示します。|
+|実行(予定)日|同期バッチが実行される日を表示します。|
+|最終実行日時|同期バッチが最後に実行された日時を表示します。未実行の場合は空欄になります。|
+
+:::note
+- 表示対象は、サイト一覧の検索条件に一致するサイトの同期バッチです。特定のサイトの履歴を確認したい場合は、サイトキーなどで検索して絞り込みます。
+- 未完了のバッチから順に、最大50件まで表示されます。ページ送りはありません。
+- 同期先のサブサイトの[バッチ処理](/ja/docs/management/batch/)画面にも同じバッチが表示されますが、親サイトのバッチ処理画面には表示されません。
+:::
+
 ## サイト追加
 ### 確認方法
 [環境設定] -> [サイト一覧]をクリックします。  
@@ -1773,9 +1819,10 @@ SendGridのWebhookリファレンスは、SendGrid -> [Event Webhook Reference](
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/3a1459cf3c5bde87c9da9dda66a4a1da.png)
 
 ### 項目説明
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/b375be70fa604d430c33d3e7ad41ee7d.png)
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/299ab348d745669a83bde7e6e4f63fdd.png)
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/27c9120d16426b311e294ec36ec5519a.png)
+<a><img src="https://t.gyazo.com/teams/diverta/b375be70fa604d430c33d3e7ad41ee7d.png" style={{ width: 600, maxHeight: 'none' }} /></a>
+<a><img src="https://t.gyazo.com/teams/diverta/99b06823961b9ddba914ca7e54cac832.png" style={{ width: 600, maxHeight: 'none' }} /></a>
+<a><img src="https://t.gyazo.com/teams/diverta/3ac6f0ea7a3be91e6fa6d84374d2b249.png" style={{ width: 600, maxHeight: 'none' }} /></a>
+
 
 |項目   |説明  |
 | :--- | :--- |
@@ -1787,6 +1834,7 @@ SendGridのWebhookリファレンスは、SendGrid -> [Event Webhook Reference](
 |ドメイン|フロントエンドドメイン、管理画面へのリンク、APIドメイン、KurocoFilesドメインが表示されます。|
 |ステータス|サイトのステータスが表示されます|
 |同期|[同期する]にチェックを入れて更新すると、選択した同期元サイトキーと同期パターンで同期を実行します。|
+|同期前バックアップ <VersionLabel version="BETA" />|[取得する]を選択すると、このサイトへの同期を実行する前に、このサイトのバックアップを取得します。初期値は[取得しない]です。<br/>この設定はサイトに保存され、サイト編集からの同期だけでなく、サイト一覧の[同期する]・[絞り込んだサイトを同期]による同期にも適用されます。<br/>取得したバックアップは、このサイトの[バックアップ](/ja/docs/management/backup/)画面で設定されているバックアップ保存日数（初期値は7日）が経過すると削除されます。保存日数は画面上の注記に表示されます。|
 |メールアドレス|サイト利用者のメールアドレスを入力します。サイトの追加が完了すると入力したメールアドレス宛に通知がとどきます。|
 |会社名|サイト利用者の会社名を入力します。|
 |名前|サイト利用者のお名前を入力します。|
@@ -2147,11 +2195,12 @@ WYSIWYG専用テンプレート編集画面右上の[その他]から[更新履�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/f8eb53add49d97e0751b8e3a4f5b7ceb.png)
 
 #### 項目説明
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/94836882650a874886bad8e4f768be4b.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/642695decb63ccea5b35dd46d6edc399.png)
 
 |項目   |説明  |
 | :--- | :--- |
 |版|版を表示します。<br/>クリックすると対象の版の状態を確認できます。|
+|A/B|2つの版を選択して［比較する］をクリックすると、更新箇所を比較できます。|
 |更新日時|コンテンツが更新された日時を表示します。|
 |更新者|コンテンツを更新したメンバー名を表示します。|
 |アクション|実行した処理の種類を表示します。<br/>アクションは以下の6種類です。<br/><ul><li>新規追加</li><li>更新</li><li>削除</li><li>申請</li><li>承認</li><li>承認差し戻し</li></ul>|

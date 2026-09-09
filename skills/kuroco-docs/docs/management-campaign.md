@@ -152,7 +152,7 @@ CSVファイルの内容については[更新する]横の[ダウンロード�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/3580d6a2bae2b36377a7a1e656857680.png)
 
 #### カテゴリ編集更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/6c8b4b52b11bf1514b783f01cf8c9aed.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/bb5ef39a6ee4731d89b91fce8488a36d.png)
 
 |項目 |説明 |
 | :--- | :--- |
@@ -446,7 +446,7 @@ CSVファイルの内容については[更新する]横の[ダウンロード�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/026daeccf113e06ab333e492d8006df8.png)
 
 #### 基本設定更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/400c3dc9b58c99cb33c81093121f40f3.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/e56a7095715800458eabc7ac6d3e00c7.png)
 
 |項目 |説明 |
 | :--- | :--- |
@@ -1004,7 +1004,7 @@ OAuth Authorization Serverでは、Kuroco自身をOAuth 2.0 / OpenID Connectの�
 | :--- | :--- | :--- |
 | 読み取り専用 | `mcp:tools.read` | 読み取りツールを利用できます。 |
 | 読み書き | `mcp:tools.read` + `mcp:tools.write` | 読み書きツールを利用できます。利用できる権限の上限はKuroco側で定義されており、[Admin MCP]画面の[mcp:tools.write が委譲する権限]で確認できます。 |
-| 全操作（委譲先メンバーの権限の範囲） | `mcp:tools.all` | すべての操作を委譲しますが、トークンの委譲先として選択したメンバーの権限が上限になります。ただしグループ（権限）と汎用Smartyバッチの作成・変更・削除、OAuth認可サーバーの設定変更と発行済み認可の失効、メンバーへのスーパーユーザーグループの付与、特権付き静的トークンの発行はできません。どのメンバーでも承認できます。 |
+| 全操作（委譲先メンバーの権限の範囲） | `mcp:tools.all` | すべての操作を委譲しますが、トークンの委譲先として選択したメンバーの権限が上限になります。ただしグループ（権限）と汎用Smartyバッチの作成・変更・削除、OAuth認可サーバーの設定変更と発行済み認可の失効、メンバーへのスーパーユーザーグループの付与、特権付き静的トークンの発行、アクセス制限（IPアドレス）の変更、カスタム処理のトリガー設定の変更はできません。どのメンバーでも承認できます。 |
 | 全権限 | `mcp:admin` | トークン発行などすべての操作を含み、コンテンツ・モジュールの制限も無視されます。このレベルを承認できるのはスーパーユーザーのみです。それ以外のメンバーには同意画面で承認可能な範囲の最も広いレベルが提示され、そのレベルでトークンが発行されます。 |
 
 いずれの権限レベルでも、トークンの実際の権限は「認証したメンバー自身の権限 ∩ そのレベルの上限」となり、メンバーが持っていない権限が付与されることはありません。

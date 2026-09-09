@@ -78,6 +78,19 @@ Multi-line text input area.
 
 Rich text editor.
 
+**編集者に HTML を意識させずに書式付きの本文を書かせたいとき**に選ぶ。逆に、HTML を自分で書きたい・エディタに整形させたくない領域は [HTML (ext_type: 21)](#html-ext_type-21-type-html) を選ぶ。
+
+**送った HTML がそのまま保持されるとは限らない。** 理由は2つあり、層が違う。
+
+**(1) 管理画面のエディタによる再構成 — WYSIWYG のときだけ。** 管理画面のエディタ（CKEditor）は本文を JavaScript で自前のドキュメントモデルに取り込んで再出力するため、モデルが表現できないマークアップは、担当者が編集画面を開いて保存した時点で構造が変わる（ソース編集モードで貼り付けても同じ）。CKEditor 側の仕様で Kuroco からは制御できず、`allow_all_tags` でも止まらない。
+
+- **書き込み時には起きない。** API / MCP で書き込んだ値はコンテンツ API で読み戻しても変わらないため、API 経由の読み戻し検証では検知できない。乖離が出るのは管理画面で保存された後。
+- **マークアップを書いたとおりに保持したいなら [HTML (ext_type: 21)](#html-ext_type-21-type-html) を使う。** そちらは管理画面もコードエディタなので、この再構成が起きない。グリッドレイアウトや独自コンポーネントの HTML を流し込む用途は、WYSIWYG ではなく HTML 項目で設計する。
+
+**(2) サーバー側のサニタイズ — WYSIWYG と HTML の両方。** `allow_all_tags` が無効（既定）だと、`<script>` など許可リストにないタグは保存時に除去される。**これは管理画面からの保存でも API / MCP からの書き込みでも同じように動く**ので、「API で送った HTML と保存された HTML が一致する」とは限らない。`allow_all_tags`（または `use_smarty`）を有効にするとサニタイズ自体がスキップされる。
+
+> `allow_all_tags` は (2) だけの設定で、(1) には効かない。逆に HTML 型を選んでも (2) は既定で効く。「入力と出力が違う」ときは、まずどちらの層かを切り分ける。
+
 ```json
 {
   "ext_title": "Article Body",
@@ -386,7 +399,9 @@ Fixed-size grid of text cells.
 
 ### HTML (ext_type: 21, type: "html")
 
-Raw HTML code input field.
+Raw HTML code input field. **HTML をそのまま書きたい・エディタにリフォーマットさせたくないとき**に選ぶ。管理画面もコードエディタなので、[WYSIWYG (6)](#wysiwyg-editor-ext_type-6-type-wysiwyg) のようなエディタによる再構成は起きない。編集者に HTML を意識させたくない本文は WYSIWYG。
+
+ただし**サーバー側のサニタイズは WYSIWYG と同じく効く**。`allow_all_tags` が無効（既定）なら `<script>` など許可リストにないタグは保存時に除去されるので、「HTML 型にすれば送ったとおりに保存される」わけではない。
 
 ```json
 {
@@ -412,6 +427,10 @@ Raw HTML code input field.
 
 Auto-increment counter. Used for sequential numbers (e.g., receipt numbers). Values are assigned automatically.
 
+**加算がコンテンツの更新処理を通らないので、更新頻度の高い数値に向く。** カウンターの値はコンテンツ本体ではなく専用テーブルに持ち、加算は1行の更新で完結する。更新履歴にも残らず `update_ymdhi` も動かないため、閲覧数・ダウンロード数のように何度も数え上げる用途はこの型を使う。値は読み出し時にコンテンツ側へ反映されるので、一覧表示や並び替えには通常どおり使える。
+
+逆に「誰がいつ変えたか」を追いたい数値には向かない。履歴を残したいなら [Number (ext_type: 35)](#number-ext_type-35-type-number) を使う。
+
 ```json
 {
   "ext_title": "Receipt Number",
@@ -427,6 +446,10 @@ Only common properties are available for this field type.
 ### Block Editor (ext_type: 38, type: "block_editor")
 
 Block-based content editor. **Allowed only as the first field of a field group** — the group's remaining fields are the block definitions. Takes no per-type parameters.
+
+**検索対象にはできない**（`searchable` を設定できない）が、**レコードごとに本文の構成が変わる**ケースには、拡張項目を固定で並べるよりこちらのほうが対応しやすい。グループの2番目以降のフィールドがブロックの種類になり、編集者は必要なブロックを必要な順に積める。「見出し＋本文＋画像」のような決まった構成が全レコード共通なら、通常の繰り返しフィールドグループで足りる。
+
+**1ブロックだけを更新することはできない。** 1つの項目の中に複数のブロックを持つが、更新の粒度は項目単位なので、1ブロックを直したいときもブロック列全体を組み立てて送り直すことになる（繰り返し項目に共通の制約で、ブロックエディタはその極端な形。SKILL.md の [Field Groups (Repeatable)](../SKILL.md#field-groups-repeatable) 参照）。本文の一部だけを API / MCP から頻繁に書き換える運用には向かない。
 
 ```json
 {

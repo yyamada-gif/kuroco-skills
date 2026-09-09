@@ -885,7 +885,7 @@ CSVに入力されるコンテンツカテゴリは通常カテゴリ名で表�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/28c5e943620b283165eec62c0476c35a.png)
 
 #### コンテンツ定義更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/a76010a294109c313f680493ccfafdae.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/8b9f92ab122659fb238d38d3840f242d.png)
 
 |項目 |説明 |
 | :--- | :--- |
@@ -1002,11 +1002,12 @@ CSVに入力されるコンテンツカテゴリは通常カテゴリ名で表�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/4485c13eb91e4408630bfb77d68d96e3.png)
 
 #### マスタ編集更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/044e0c62b2e671e338975c34dab989a6.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/92085bb7283423ba774e00860ab67eaa.png)
 
 |項目 |説明 |
 | :--- | :--- |
 |版|版を表示します。<br/>クリックすると対象の版の状態を確認できます。|
+|A/B|2つの版を選択して［比較する］をクリックすると、更新箇所を比較できます。|
 |更新日時|コンテンツが更新された日時を表示します。|
 |更新者|コンテンツを更新したメンバー名を表示します。|
 |アクション|実行した処理の種類を表示します。<br/>アクションは以下の6種類です。<br/><ul><li>新規追加</li><li>更新</li><li>削除</li><li>申請</li><li>承認</li><li>承認差し戻し</li></ul>|
@@ -1133,7 +1134,7 @@ CSVに入力されるコンテンツカテゴリは通常カテゴリ名で表�
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/c1c2ccbb7c869982586b63e5910b91c3.png)
 
 #### タグ編集更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/89febc0eedaeda3f31e2c295410c90ab.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/4d902fbce0f3603da1969e79bfdaffb5.png)
 
 |項目 |説明 |
 | :--- | :--- |

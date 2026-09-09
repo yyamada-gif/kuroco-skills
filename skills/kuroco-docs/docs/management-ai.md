@@ -59,12 +59,15 @@ URLは`/management/rcms_api/admin_mcp_info/`です。この画面は、管理画
 
 利用するMCPクライアントのタブを選び、表示される手順に従って接続します。タブは[Claude Code]、[Claude]、[ChatGPT]、[Codex]、[Cursor]、[VS Code]、[n8n]、[Dify]、[Slackbot]<!-- 、[APIコネクタ]（提供版αではタブ自体が表示されないためコメントアウト。表示が確認できたら復活） -->、[その他]です。
 
+[Claude Code]、[Claude]、[ChatGPT]、[Codex]、[Cursor]、[VS Code]、[その他]の各タブは、[1. Admin MCP に接続する]と[2. Kuroco Skills をインストールする]の2ステップで構成されています。
+
 | 項目 | 説明 |
 | :--- | :--- |
 | CIMDの状態 | Client ID Metadata Documents（CIMD）が有効な場合は、対応クライアント（Claude、Claude Code、VS Codeなど）をOAuthクライアントの事前登録なしで接続できる旨を表示します。無効な場合は警告を表示し、[CIMDを有効にする]（認可サーバーの編集画面へ移動）と[OAuthクライアントを登録する]のボタンを表示します。 |
 | [全ツール] / [読み取り専用] | タブ内に表示されるURLの切り替えです。[読み取り専用]を選ぶと、URLが`/readonly`付きに書き換わります。Cursorタブでは、あわせてサンプルの`scopes`も書き換わります。 |
 | URL・設定例 | 選択中のクライアントに設定するURL、コマンド、設定ファイルの記述例を表示します。右上のアイコンでクリップボードにコピーできます。 |
 | [詳しい設定手順（ドキュメント）] | 選択中のクライアントの設定手順（[MCPクライアント設定リファレンス](/ja/docs/reference/mcp-client-configuration/)）を表示します。 |
+| [2. Kuroco Skills をインストールする] | 接続後に[Kuroco Skills](/ja/docs/tutorials/kuroco-skills-overview/)を導入する手順です。クライアントに応じて、インストール用のコマンド（[Claude Code]では`claude plugin`コマンド、[Codex]・[Cursor]・[VS Code]・[その他]では`npx skills`コマンド）、または全スキルのzipをダウンロードするボタン（[Claude]・[ChatGPT]）を表示します。 |
 | [OAuthクライアントを管理する] / [OAuthクライアントを登録する] | OAuth Authorization Server クライアント管理の一覧画面・登録画面へ移動します。 |
 
 CIMDが無効な場合、`YOUR_CLIENT_SECRET`は登録時に控えたクライアントシークレットに置き換えます。クライアントシークレットはクライアント登録・再生成時に一度だけ表示され、以降は取得できません。紛失した場合は、クライアント編集画面の[保存時にクライアントシークレットを再生成する]で再発行します（以前のシークレットは無効化されます）。
@@ -208,7 +211,7 @@ MCPクライアントからBearerトークン（OAuthアクセストークンま
 
 ## 関連ドキュメント
 
-- [Admin MCP に MCP クライアントを接続する](/ja/docs/tutorials/connect-to-admin-mcp/)
+- [Admin MCP でKuroco管理画面を操作する](/ja/docs/tutorials/connect-to-admin-mcp/)
 - [MCP クライアント設定リファレンス](/ja/docs/reference/mcp-client-configuration/)
 - [認証ヘッダーによる MCP クライアント設定リファレンス](/ja/docs/reference/mcp-client-configuration-authentication-header/)
 - [MCP サーバ リファレンス](/ja/docs/reference/mcp-server/)

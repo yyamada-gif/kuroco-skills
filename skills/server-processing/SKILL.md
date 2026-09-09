@@ -2,7 +2,7 @@
 name: kuroco-server-processing
 metadata:
   author: Diverta inc.
-  version: "1.5.0"
+  version: "1.5.1"
   lastUpdated: "2026-08-27"
 description: Kurocoのサーバーサイド処理リファレンスと外部連携の方式設計。Smartyテンプレートの構文と151プラグイン（api、api_internal、sendmail、slack_post_message、ai_completionなど）、バッチ処理による定期実行、スパイダー、Webhook、コンテンツ・フォーム更新時のトリガー処理、トリガーメールアドレス、Slack・Chatwork・SendGrid・GitHub Actions連携、外部システム連携方式（直接呼び出し／プロキシ／取り込み）の選定とシークレット・OAuthトークン管理・タイムアウト制約をカバー。Smarty構文やプラグインの使い方、定期実行・自動化・外部通知・カスタム処理の実装、LINE・Slack・Instagram等の外部APIとの連携方式やAPIキーの隠し方の相談で使用。
 ---

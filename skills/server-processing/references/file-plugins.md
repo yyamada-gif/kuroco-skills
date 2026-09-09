@@ -388,7 +388,7 @@ ZIPファイルを解凍してクラウドストレージにアップロード�
 
 ### Return Value
 
-なし（ファイルが展開されます）
+`unzip_result` 変数に事前検証の結果が代入されます（`validated`: 検証したか、`accepted`: 展開されるエントリ数、`rejected`: 展開されないエントリの一覧（`path` / `reason` / `message`）、`error`: アーカイブ全体が拒否された理由。`error` が入っている場合は解凍は実行されません）
 
 ### Usage Example
 
@@ -399,11 +399,15 @@ ZIPファイルを解凍してクラウドストレージにアップロード�
 {unzip src='/files/g/public/archive.zip' dest='/files/g/public/extracted/' overwrite=1}
 {* コールバック付きで解凍 *}
 {unzip src='/files/g/public/archive.zip' dest='/files/g/public/extracted/' callback_batch='process_files' data=$metadata}
+{* 展開されないエントリを確認 *}
+{unzip src='/files/g/public/archive.zip' dest='/files/g/public/extracted/'}
+{if $unzip_result.error}{$unzip_result.error}{/if}
+{foreach from=$unzip_result.rejected item=entry}{$entry.path}: {$entry.reason}{/foreach}
 ```
 
 ### Notes
 
-- 展開先として許可されているパスは `/files/g/public/`、`/files/g/private/` 以下です。処理はGoogle Cloud Pub/Subを使用して非同期で実行されます。Firebase認証情報とPub/Sub認証情報が必要です。
+- 展開先として許可されているパスは `/files/g/public/`、`/files/g/private/` 以下です。処理はGoogle Cloud Pub/Subを使用して非同期で実行されます。Firebase認証情報とPub/Sub認証情報が必要です。`src` はサイトのクラウドストレージ上のファイルに限られ、解凍前に各エントリをファイルマネージャーと同じ規則（パス、隠しフォルダ、拡張子、件数・容量の上限）で検証し、通過したエントリだけが展開されます。
 
 ---
 

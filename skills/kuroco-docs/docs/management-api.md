@@ -80,6 +80,21 @@ CORSに設定されたOriginは、Content-Security-Policy: frame-ancestorsに指
 |CORS_MAX_AGE|Access-Control-Max-Age|600|
 |CORS_ALLOW_CREDENTIALS|access-control-allow-credentials|:white_check_mark:|
 
+:::danger
+`CORS_ALLOW_ORIGINS`にワイルドカード(`*`)を指定すると、Kurocoはリクエスト元のOriginをそのまま`Access-Control-Allow-Origin`に返します。
+`CORS_ALLOW_CREDENTIALS`を有効にしている場合、**すべてのオリジンがCookieを伴うリクエストの送信とレスポンスの読み取りを許可されます。**
+オリジンによる境界がなくなるため、攻撃者のサイトから会員のセッションでAPIを実行される可能性があります。
+
+サブドメインのワイルドカード(`https://*.example.com`)を指定している場合は、対象となるサブドメインすべてが管理下にあることを確認してください。外部サービスに割り当てているサブドメインや、使用を終了して第三者が取得できる状態のサブドメインが含まれていると、そのオリジンからのリクエストが許可されます。
+
+`CORS_ALLOW_CREDENTIALS`を有効にする場合は、`CORS_ALLOW_ORIGINS`に許可するオリジンを明示的に指定してください。
+詳細は[脆弱性診断でCSRFの脆弱性が検出されました。Kurocoではどのように対応すればいいですか？](/ja/docs/faq/csrf-was-detected-in-a-vulnerability-assessment/)をご覧ください。
+:::
+
+:::note
+`Content-Type`・`X-RCMS-API-ACCESS-TOKEN`・`X-Requested-With`は、`CORS_ALLOW_HEADERS`の設定内容にかかわらず常に許可されます。
+:::
+
 ### API構造の編集
 API編集画面が表示されます。
 

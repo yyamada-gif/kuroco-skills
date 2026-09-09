@@ -551,6 +551,10 @@ npx skills add diverta/kuroco-skills
 
 インストール後、Claude Code を再起動するとスキルが有効になります。`/plugin`コマンドを使う方法や、リポジトリを直接クローンする方法は[Kuroco Skills の使い方](/ja/docs/tutorials/kuroco-skills-overview/#インストール方法)を参照してください。
 
+:::info
+このコマンドは[Admin MCP]画面の各クライアントのタブでも、[2. Kuroco Skills をインストールする]として表示されます。
+:::
+
 ### 6. 動作確認
 
 Claude Code で`/mcp`を実行し、登録した MCP サーバーの状態が接続済みになっていること、Admin MCP のツールが一覧に表示されることを確認します。状態が`needs authentication`のままの場合は、`claude mcp login {サーバー名}`で認証を実行します。

@@ -117,6 +117,14 @@ claude.ai はGitHubリポジトリを直接参照できず、**スキルごと�
 
 複数のスキルを使う場合は必要な数だけダウンロード・アップロードしてください（zip 1つ = スキル1つ）。全スキルをまとめて落としたい場合は [kuroco-skills-all.zip](https://github.com/diverta/kuroco-skills/releases/latest/download/kuroco-skills-all.zip) をダウンロードして展開すると、上記のスキル zip が全部入っています（アップロードは展開後の zip を1つずつ）。自分で最新のソースから zip を作りたい場合は `./scripts/build-skill-zips.sh` を実行すると `dist/` に全スキル分が生成されます。
 
+#### ChatGPT（Web / Work）
+
+プラグインとしてワークスペース全体に登録します。Business / Enterprise でプラグインの追加が許可されている場合に利用できます（追加用の **＋** が出ない場合は **Settings → Security and login → Developer mode** を有効にしてください）。
+
+claude.ai と違い **zip の展開は不要**です。[kuroco-skills-all.zip](https://github.com/diverta/kuroco-skills/releases/latest/download/kuroco-skills-all.zip) をそのままチャットに添付し、「ここに入っている一つ一つのファイルをそれぞれスキルにして、そのあとそれらをひとまとめにしたプラグインを作って、それを〈ワークスペース名〉のワークスペースに登録して」と依頼します。検証まで済んだ状態で確認を求められるので、**「登録する」と返信して確定**します。
+
+登録後は入力欄で `kuroco-skills-all` をメンションすると有効になります。**登録先はワークスペース全体（組織のメンバー全員から見える）**なので、確定前に登録先が正しいか確認してください。
+
 #### Claude API / Agent SDK
 
 Skills API（`/v1/skills`）でアップロードし、[コード実行ツール](https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool)の `container` パラメータで `skill_id` を指定します。ベータヘッダー `skills-2025-10-02` が必要です。アップロードしたスキルはワークスペース全体で共有されます。
@@ -274,6 +282,14 @@ claude.ai can't reference a GitHub repo directly — it needs **one zip per skil
 | kuroco-docs | [zip](https://github.com/diverta/kuroco-skills/releases/latest/download/kuroco-docs.zip) |
 
 Download and upload as many as you need (one zip = one skill). To grab everything at once, download [kuroco-skills-all.zip](https://github.com/diverta/kuroco-skills/releases/latest/download/kuroco-skills-all.zip) — it contains all the skill zips above (extract it, then upload each inner zip individually). To build the zips yourself from source, run `./scripts/build-skill-zips.sh`, which writes all of them to `dist/`.
+
+#### ChatGPT (Web / Work)
+
+Register the skills as a workspace-wide plugin. Available on Business / Enterprise workspaces where adding plugins is permitted (if the **＋** button is missing, enable **Settings → Security and login → Developer mode**).
+
+Unlike claude.ai, **you do not need to unpack the zip**. Attach [kuroco-skills-all.zip](https://github.com/diverta/kuroco-skills/releases/latest/download/kuroco-skills-all.zip) to a chat as-is and ask: "Turn each file in this archive into a skill, bundle them into a single plugin, and register it to the ⟨workspace name⟩ workspace." ChatGPT validates everything and stops for confirmation — reply **"register it"** to finalize.
+
+Once registered, mention `kuroco-skills-all` in the composer to activate the skills. **The plugin is registered workspace-wide (visible to every member of the organization)**, so verify the target workspace before confirming.
 
 #### Claude API / Agent SDK
 

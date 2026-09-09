@@ -962,12 +962,12 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 | 設定項目 | 設定       |             |
 | :------- | :------- | :------- |
 | パス | original_api/sample1 |             |
-|  | 有効/無効 | 有効 |
-| モデル | カテゴリー | 配信 |
+|  | ステータス | 有効にする |
+| モデル | カテゴリー | 一括配信 |
 |  | モデル | Magazine |
 |  | オペレーション | Subscribe |
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/8db35933282272deaf2d5f3c8f4423a3.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/6808d7c777c439366d6cc6cd4e65fcef.png)
 
 ## カスタム処理を作成する
 バリデーション処理を記述するためのカスタム処理を用意します。
@@ -975,12 +975,12 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 ### カスタム処理の一覧画面を表示する  
 メニューの[オペレーション] -> [カスタム処理] をクリックします。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/baddc3d7091c3a34bed2af152ec984ec.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/c0ef2eee447d621b1a497531b65f6d5c.png)
 
 ### カスタム処理の編集画面を表示する 
 カスタム処理一覧画面の右上の [追加] をクリックします。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/488c4ee6513ef4938e7d73c444b68905.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/71e196a02c6820f65633a61eda88730d.png)
 
 ### タイトル・カテゴリを入力する
 カスタム処理のタイトルとカテゴリを入力します。  
@@ -993,13 +993,13 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 同一カテゴリ内にタイトルが重複する処理を作成できないため、実装対象のエンドポイント名など、他と重複しないタイトルを命名してください。
 :::
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/1259638440c9aac9e1c4d0bb068e6c84.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/45a76305b4ff194c9afbc1eedd89a4f0.png)
+
 ### カスタム処理を保存する  
 一旦ここまでで保存します。
 画面下部までスクロールし、[追加する] ボタンをクリックして保存します。  
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/1c2ff9f821fa872259c3f77feeac49a2.png)
-
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/91518559f7144dae5abda62b1d1a539c.png)
 
 ## バリデーション処理を記述する
 次に、バリデーション処理を記述します。
@@ -1007,15 +1007,15 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 ### カスタム処理編集画面を表示する 
 サイドメニューより[オペレーション]を選択し、[カスタム処理]をクリックします。  
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/baddc3d7091c3a34bed2af152ec984ec.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/c0ef2eee447d621b1a497531b65f6d5c.png)
 
 先ほど追加したカスタム処理のタイトルをクリックします。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/5e72d2a08f6e3323ca8cfb9859ce328e.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/04b7fab4efc63bac456085f153fdbfc6.png)
 
 カスタム処理の編集画面に戻り、エディタ内にバリデーション処理を記述していきます。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/1bc957775ba45ef32fa7991c4cbd16de.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/402f396df2907a3909bb55023c325396.png)
 
 ### エラー変数を初期化する
 バリデーション結果を格納するための$errors変数を初期化します。  
@@ -1030,8 +1030,7 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 {* $errors = [] *}
 {assign_array var="errors" values=""}
 ```
-
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/8febf5f999d216ba78efa163a2eca9f1.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/5a21ae3c17b862199858648db67ab0d4.png)
 
 ### バリデーション処理を実装する
 ユーザーの入力値をチェックし、errors変数に結果を代入します。  
@@ -1052,28 +1051,27 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
   {assign var="errors." value="メールアドレスが不正です。"}
 {/if}
 ```
-
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/2f4832e20f4fd343cb4cb0c67c191e4f.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/b48c79caa090511eb613060876c55ec7.png)
 
 ### 保存する
 処理の記述が完了したら、[更新する] ボタンをクリックし保存してください。  
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/cdd128a4f2f5cafbb30306da8b4ee7de.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/ad30d9e37e0ee350fa2c9fc4f6f18ef3.png)
+
 ## APIにカスタム処理を関連付ける
 次に作成したカスタム処理をAPIに関連付けます。  
 
 ### API一覧画面を表示する
 [API] ->[Default] をクリックします。  
-
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/a18960024a9f08e2b2cadf906b9d3fd7.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/8ea090f50559bdd032d8b0a35b9ea31c.png)
 
 ### エンドポイントを選択する
 事前準備で作成したエンドポイント`/rcms-api/1/original_api/sample1`の[前処理]ボタンをクリックします。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/9cc61b8ff106fb3e961333fbaf2d3f5e.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/a1917c8a6db74ae36458e7ad017afa89.png)
 
 テーブルの下に、「カテゴリ」と「一覧」プルダウンが表示されます。
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/35eb8a3f0ed1176a8aeabd36216f5ff6.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/a257d4b8f98ea9d2b261366025ae42ab.png)
 
 ### カスタム処理を関連付ける
 カスタム処理の選択プルダウンが表示されます。  
@@ -1082,7 +1080,7 @@ CSVがUTF-8で保存されるので、メモ帳で開く、もしくはエクセ
 - カテゴリ：API
 - 一覧：/rcms-api/1/original_api/sample1
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/de901fe59dd1cb005394c124eb116502.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/37019e22c95dea3523ffb33dcd53a317.png)
 
 ## APIの動作を確認する
 Swagger UI画面からリクエストを行い、バリデーション処理の動作を確認します。
@@ -1091,7 +1089,7 @@ Swagger UI画面からリクエストを行い、バリデーション処理の�
 
 API一覧画面より [Swagger UI] をクリックし、Swagger UI画面を表示します。  
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/7d703b484b76c1bc1256cd155f9fc2f0.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/1b19ccaca49d99fa7cacb2b26bd67c5e.png)
 
 ### エンドポイントを選択する
 バリデーション処理を実装したエンドポイント`/rcms-api/1/original_api/sample1`を選択し、[Try it out] ボタンをクリックします。  
