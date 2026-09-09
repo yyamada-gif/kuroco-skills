@@ -3,6 +3,12 @@
 Kurocoが提供するフロントエンドホスティング（静的ホスティング + CDN）。本スキルの既定の公開先。
 公開先の決め方は [SKILL.md「公開先の決定」](../SKILL.md#公開先の決定) を参照。
 
+公式ドキュメント（`/kuroco-docs` スキルに同梱。slug で検索する。手元に無ければ公式サイト）:
+
+- `/kuroco-docs`（`kurocofront`） — [KurocoFrontについて](https://kuroco.app/ja/docs/about/kurocofront/)
+- `/kuroco-docs`（`what-is-kuroco_front_json`） — [kuroco_front.jsonとは何ですか？](https://kuroco.app/ja/docs/faq/what-is-kuroco_front_json/)。**全キーの仕様はここが正**
+- `/kuroco-docs`（`kuroco-front-settings`） — [KurocoFront設定](https://kuroco.app/ja/docs/management/kuroco-front-settings/)
+
 ## 適する用途
 
 - 継続運用する公開サイト・Webアプリ
@@ -27,8 +33,8 @@ Kurocoが提供するフロントエンドホスティング（静的ホステ�
 
 `rewrites` のほかBasic認証・IPアドレス制限も設定可能（Basic認証のパスワードはプレーンテキストのため、公開リポジトリでは注意）。
 
-**JSONが壊れている・ファイルが見つからない場合は `404 Not Found (CONFIG FILE NOT FOUND)`** になる。
-サイト全体が404になったら、まずこのファイルの存在と構文を疑う。
+**ファイルが見つからない場合は `404 Not Found (CONFIG FILE NOT FOUND)`** になる。JSONとして読めない場合は
+そのデプロイが反映されず前バージョンが配信され続ける（後述）。サイト全体が404になったら、まずこのファイルの配置を疑う。
 
 ### 使えるキー
 
@@ -36,18 +42,18 @@ Kurocoが提供するフロントエンドホスティング（静的ホステ�
 そのまま持ち込んだ場合、警告も出ずに無視されるだけなので、**設定したつもりで一切効いていない**状態になる。
 キー名は下の表と突き合わせ、デプロイ前に[検査](#デプロイ前に検査するkurocofront-validate_config)する。
 
-| キー | 内容 |
+| キー | 役割 |
 |------|------|
-| `rewrites` | URLリライト（URLは変えない） |
-| `redirects` | リダイレクト（URLが変わる。`status:302:` / `status:404` の指定可） |
-| `redirects_by_ie` | UserAgentに `MSIE` / `Trident` を含む場合だけのリダイレクト |
-| `basic` | Basic認証（`"id:password"` の配列） |
-| `ip_restrictions` | IPアドレス制限（CIDR可） |
-| `ip_restricted_maintenance` | 指定IP以外にメンテナンスページを表示 |
-| `error_page` | エラーページ（`status404` / `status403` / `status401` / `status_ip_503`） |
-| `stale_while_revalidate` | 失効済みコンテンツをCDNから配信する秒数。**数値ではなく文字列で書く**（`"86400"`） |
+| `rewrites` | URLリライト（URLは変えない）。**ファイル非存在時に限定されるのは `source` が `.*` のときだけ**で、それ以外はファイルの有無を見ずに常に適用される |
+| `redirects` | リダイレクト（URLが変わる。301 / `status:302:` / `status:404`）。`.*` の規則は rewrites と同じ |
+| `redirects_by_ie` | UserAgent が IE のときだけのリダイレクト。ファイルの存在確認はしない |
+| `basic` | Basic認証（`"id:password"` の配列、平文） |
+| `ip_restrictions` | IPアドレス制限（CIDR の配列） |
+| `ip_restricted_maintenance` | 指定 IP 以外にメンテナンスページを表示（CIDR の配列） |
+| `error_page` | エラーページ（`status404` / `status403` / `status401` / `status_ip_503`。パスは `/` 始まり） |
+| `stale_while_revalidate` | 失効済みコンテンツを CDN から配信する秒数（**文字列で書く**。HTTP 200 のときだけ効く） |
 
-各キーの項目仕様は `/kuroco-docs` の FAQ「kuroco_front.jsonとは何ですか？」が正。
+各キーの項目仕様・設定例は `/kuroco-docs`（`what-is-kuroco_front_json`）を読む。ここには転記しない。
 
 ### デプロイ前に検査する（`kuroco_front-validate_config`）
 
@@ -95,9 +101,9 @@ Vue Router の `createWebHistory` / React Router の `BrowserRouter` のよう�
 
 守るべき点:
 
-- **`source` は必ず `.*`。** リライトが「**ファイルが存在しない場合のみ有効**」になるのは `source` が `.*` のときだけで、
-  `^/app/.*` のように絞ると**ファイルの存在を確認せず常にリライトされる**。JS・CSS・画像まで `index.html` に吸われてアプリが起動しなくなる。
-  「SPAは `/app` 配下だけだから」とスコープを絞るのが典型的な失敗
+- **`source` は `.*`。** 仕様上、「ファイルが存在しない場合のみ」リライトされるのは `source` が `.*` のときだけ。
+  それ以外の `source` はファイルの有無を見ずに常にリライトされるため、`^/.*$` のようにマッチ範囲が同じ書き方でも、
+  `^/app/.*` のように絞る書き方でも、JS・CSS・画像が `index.html` に置き換わりアプリが起動しない
 - **複数の `rewrites` を書くなら `.*` のフォールバックを最後に置く。** 上から順にチェックされるため、先頭に置くと後続が評価されない
 - **`error_page.status404` はSPAでは発火しない。** `.*` のフォールバックがある限り未知のパスも `index.html` を 200 で返すため。
   存在しないページの表示はクライアント側ルーターの404ルートで行う。
@@ -151,11 +157,17 @@ KurocoFrontへのデプロイは2通りある:
 ### 方法1: GitHub連携（継続的な運用向け）
 
 管理画面 [KurocoFront] → GitHubリポジトリ連携。push時にGitHub Actionsでビルドされ、成果物（zip）がKurocoFrontへデプロイされる。
-手順の詳細は `/kuroco-docs` の `connect-to-github-with-kuroco-front` を参照。
+手順の詳細は `/kuroco-docs`（`connect-to-github-with-kuroco-front`）— [GitHubからKurocoFrontへソースをデプロイする方法](https://kuroco.app/ja/docs/tutorials/connect-to-github-with-kuroco-front/) を参照。
+push しても反映されないときの切り分け（ワークフロー YAML・ビルド失敗・Artifacts のサイズ・CDN キャッシュ）は
+`/kuroco-docs`（`what-should-I-do-if-file-updates-are-not-reflected-in-kurocofront`）— [KurocoFrontにファイルが反映されないのですが、何をチェックすればよいですか？](https://kuroco.app/ja/docs/faq/what-should-I-do-if-file-updates-are-not-reflected-in-kurocofront/)。
 
 ### 方法2: Admin MCPからの直接デプロイ（AIエージェント・ワンショット向け）
 
-GitHubリポジトリなしで、ビルド成果物のzipを直接デプロイできる。Admin MCPの `services` バンドル
+GitHubリポジトリなしで、ビルド成果物のzipを直接デプロイできる。ただし**手順3のzipアップロード（presigned URL への HTTPS PUT）と
+手順5の公開URLの実取得はMCPの外側の通信**で、エージェントの実行環境から外部へ HTTPS を送れることが前提になる。
+外部へのHTTP送信が制限されたサンドボックス型クライアントでは手順3が通らず方法2は完結しないので、その環境では方法1（GitHub連携）を選ぶ。
+
+Admin MCPの `services` バンドル
 （`/x/services` を含むスコープ、または `/x/all`）に以下のツールがある（正確な名前・スキーマは必ず `tools/list` で確認）:
 
 | ツール | 用途 |
@@ -169,22 +181,43 @@ GitHubリポジトリなしで、ビルド成果物のzipを直接デプロイ�
 **デプロイ前の確認（上書き注意）**: 1つのドメインで公開されるのは**現行デプロイ1つだけ**で、
 新しいデプロイは既存の公開内容を置き換える。デプロイ前に `kuroco_front-history`（`current_flg: "1"`）で
 既存デプロイの有無を確認し、上書きになる場合はユーザーに確認を取る。
-確認が取れない場合は `is_preview: true` のプレビューデプロイに留めること。
+確認が取れない場合は本番へは出さない。プレビューデプロイで代替する前に[暫定回避策](#暫定回避策)を読む。
 
 **手順**:
 
 1. **ビルド**: `nuxt generate` / `vite build` 等。ビルド出力のルートに `kuroco_front.json` があることを確認。
    **`kuroco_front-validate_config` にそのファイルのテキストを渡して検査する**（`valid` が false のまま進めると、設定が黙って無視されるかデプロイが反映されない）
-2. **zip化**: ビルド出力ディレクトリの**中身**をzipのルートにする（`cd dist && zip -r ../dist.zip .`）
+2. **zip化**: ビルド出力ディレクトリの**中身**をzipのルートにする（`cd dist && zip -r ../dist.zip .`）。
+   ディレクトリ名を指定して固める（`zip -r dist.zip dist` や絶対パス指定）とエントリ名が `dist/index.html` のようにパス付きになり、
+   配信側は `/index.html` を見つけられない。**この間違いでもデプロイは `accepted` を返す**ので、
+   アップロード前に `unzip -l dist.zip` でルート直下に `index.html` と `kuroco_front.json` が並ぶことを確認する
 3. **アップロード先の発行**: `files-create_temp_upload_url` を呼ぶ。`file_size`（バイト数）と `ext: "zip"` の宣言が必須。返却された `presigned_url` にzipの生バイトをPUTする
 4. **デプロイ実行**: `kuroco_front-deploy` を呼ぶ。`artifact_url` に手順3のレスポンスの `url`（または `short_url`）を渡す
    - `artifact_url` は **Kuroco Filesストレージ上のURLのみ**受け付ける（第三者ホストのURLは不可）
    - `domain` 省略時はサイト設定から自動解決（`site_url` → `site_url2` → `{site_key}.g.kuroco-front.app` の順）。指定する場合もこのいずれかに一致する必要がある
-   - `is_preview: true` を渡すとステージ環境へのプレビューデプロイになり、レスポンスに `stage_url` が返る。**本番反映前にプレビューで確認するのを推奨**
+   - `is_preview: true` を渡すとステージ環境へのプレビューデプロイになり、レスポンスに `stage_url` が返る。本番反映前の確認に使えるが、反映されない場合がある（[暫定回避策](#暫定回避策)）
    - `hash` は任意（7文字以上の英数字。省略時は自動生成）
-5. **完了確認**: レスポンスは `status: "accepted"`（キュー投入・非同期）。`kuroco_front-history`（`current_flg: "1"` で現行デプロイに絞り込み）で反映を確認する
+5. **完了確認**: レスポンスの `status: "accepted"` はキュー投入の受領であり、反映の成功ではない。反映には30秒〜数分かかる。次の2つを両方確認する:
+   - `kuroco_front-history` に今回のデプロイの行がある（本番なら `current_flg: 1`）
+   - 公開URL（プレビューなら `stage_url`）で `index.html` が 200 で返り、レスポンスヘッダー `x-rcms-hash`・`x-rcms-deploy` がその行の `hash` に対応している
+   `accepted` から10分経っても満たさなければ失敗とみなし、[反映されないときの見分け方](#反映されないときの見分け方)へ
 
 **必要権限**: `kuroco_front-*` は管理メンバーの `kuroco_front/update` 権限、`files-*` は `files/update` 権限が必要。
+
+### 反映されないときの見分け方
+
+`kuroco_front-deploy` は zip の中身を検査せず、反映に失敗してもエラーも履歴の行も残らないことがある。
+配信中のデプロイはレスポンスヘッダーで識別する（`/kuroco-docs`（`how-do-i-verify-the-hash-responses-used-by-kurocofront`）・`/kuroco-docs`（`how-do-i-verify-responses-in-the-cdn-cache`））:
+
+- `x-rcms-hash`・`x-rcms-deploy` — 配信中のデプロイ。`kuroco_front-history` の `hash` はこの2つを連結した値
+- `age` — CDN にキャッシュされてからの秒数。無ければオリジンからの応答
+
+| 症状 | 原因 | 対処 |
+|---|---|---|
+| 公開URLが404で、`kuroco_front-history` に行が無い | zipのルートに `index.html` が無い（ディレクトリ名や絶対パスを指定して固め、エントリ名がパス付き） | ビルド出力ディレクトリの中で固め直し、`unzip -l` で確認してから再デプロイ。反映後も404なら `kuroco_front-cdn_cache_purge`（404応答もキャッシュされる） |
+| 前バージョンが配信され続ける | `kuroco_front.json` がJSONとして読めない（デプロイ時に検査されない） | `kuroco_front-validate_config` で `valid: true` を確認してから再デプロイ |
+| 全パスが `404 Not Found (CONFIG FILE NOT FOUND)` | `kuroco_front.json` がzipのルートに無い | `public/`（Nuxt 2は `static/`）に置いてビルドし直し、`unzip -l` で確認 |
+| 履歴に `current_flg: 1` の行があるのに、`x-rcms-deploy` が旧デプロイのままで `age` が付く | CDNの長期キャッシュ（`s-maxage=31536000`）。クエリ文字列は無視されるので `?v=2` では回避できない | `kuroco_front-cdn_cache_purge` の後に再取得 |
 
 **関連ツール**（`site` モジュールスコープ側）:
 
@@ -195,6 +228,17 @@ GitHubリポジトリなしで、ビルド成果物のzipを直接デプロイ�
 同じ機能はREST APIとしても利用できる（`KurocoFront::deploy` / `KurocoFront::history` モデルをエンドポイント登録）。
 CIから定常的にデプロイする場合は GitHub連携、または `client_credentials` クライアント（`/kuroco-admin-mcp` 参照）を使い、
 `kuroco_front-generate_deploy_token` の都度発行は単発のデプロイに限る。
+
+## 暫定回避策
+
+**Kuroco 本体側の修正で解消する見込みのもの**をここに隔離する。恒久的な手順（上の各節）と混ぜない。
+**解消条件を満たしたらこの節から削除する。**
+
+### プレビューデプロイ（`is_preview: true`）が反映されず、履歴にも残らない
+
+- **症状**: `is_preview: true` の `kuroco_front-deploy` が `accepted` を返すのに、`stage_url` が `DEPLOYMENT NOT FOUND` のまま変わらず、`kuroco_front-history` にも行が現れないことがある。同じzipが本番ドメインへは反映されるなら、zipや `kuroco_front.json` の問題ではない
+- **回避**: プレビューでの事前確認を前提にしない。手順1・2（`kuroco_front-validate_config` とzip構造の確認）で本番前の検査を済ませ、既存デプロイがあるサイトでは上書きになることをユーザーに確認してから本番へデプロイする。確認が取れないなら本番へは出さず、プレビューが使えない旨を伝えて止める
+- **解消条件**: `is_preview: true` のデプロイが `kuroco_front-history` に行として現れ、`stage_url` で閲覧できるようになったら不要。**試せば分かる**ので、プレビューが反映されるようになっていたらこの項目を削除する
 
 ## 完了条件
 

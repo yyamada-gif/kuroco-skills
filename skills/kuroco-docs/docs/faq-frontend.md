@@ -24,6 +24,7 @@
 - KurocoFrontでどのハッシュが利用されているかの確認方法を教えてください（`how-do-i-verify-the-hash-responses-used-by-kurocofront`）
 - カスタムディメンションで設定されている数値の集計結果を確認する方法はありますか？（`how-to-generate-reports-using-custom-dimensions`）
 - サイト内で利用している静的ファイル（画像、JS、CSSなど）はどこに配置するのが良いでしょうか？（`how-to-place-static-files`）
+- WYSIWYGエディタで作成したコンテンツの見た目をフロントエンドで再現するには？（`how-to-reproduce-wysiwyg-editor-styles-on-the-frontend`）
 - デプロイしたサイトの表示を404に戻すことはできますか？（`is-it-possible-to-revert-the-deployed-site-to-display-a-404-error`）
 - ページをリロードしたり、URLに直接アクセスすると 404 Not Found になります。（`reloading-the-page-or-accessing-it-directly-will-result-in-404-not-found`）
 - 独自ドメインを設定しましたがサイトが表示できません。何を確認すれば良いでしょうか？（`setting-up-a-custom-domain`）
@@ -1106,6 +1107,170 @@ KurocoFront、KurocoFilesについては下記ドキュメントをご確認く�
 - [KurocoFilesディレクトリとドメインの使い分けについて](/ja/docs/tutorials/kurocofiles-directories-and-domains-usage/)
 - [KurocoFrontについて](/ja/docs/about/kurocofront/)
 - [GitHub Actionsのビルド&デプロイに時間がかかってしまいます。解決方法はありますか？](/ja/docs/faq/how-to-reduce-artifact-file-sizes/)
+
+
+---
+
+# WYSIWYGエディタで作成したコンテンツの見た目をフロントエンドで再現するには？
+
+> 元ページ: `faq/how-to-reproduce-wysiwyg-editor-styles-on-the-frontend` ｜ 公式ページ: https://kuroco.app/ja/docs/faq/how-to-reproduce-wysiwyg-editor-styles-on-the-frontend/
+> 概要: KurocoのWYSIWYGエディタはCKEditor 5を利用しています。APIで取得した本文を class="ck-content" の要素で囲み、CKEditor 5公式の content styles（content-styles.css）を読み込むことで、管理画面と同じ見た目をフロントエンドで再現できます。
+
+KurocoのWYSIWYGエディタは[CKEditor 5](https://ckeditor.com/ckeditor-5/)を利用しています。  
+WYSIWYGエディタで作成した本文には、表の`<figure class="table">`や画像の`<figure class="image image-style-side">`、文字サイズの`<span class="text-big">`など、CKEditor 5が定める要素・クラス名が付与されます。
+
+管理画面のエディタ内では、これらのクラスに対してCKEditor 5の「content styles」が適用されています。  
+一方、APIで取得した本文をフロントエンドでそのまま表示した場合、content stylesは読み込まれていないため、以下のような事象が発生します。
+
+- 管理画面のエディタで見た表示と、フロントエンドでの表示が異なる
+- 表示側のページで定義している`.table`や`.image`などの同名クラスのCSSが本文に適用され、表示が崩れる
+
+これらは、本文を`class="ck-content"`の要素で囲み、CKEditor 5公式のcontent stylesを読み込むことで解消できます。  
+コンテンツのHTMLやクラス名を書き換える必要はありません。
+
+## 対応方法
+
+### 1. content-styles.cssを用意する
+
+CKEditor 5公式ドキュメントの以下のページに、content stylesの全文が掲載されています。  
+「The full list of content styles」のCSSをコピーし、`content-styles.css`などのファイル名で保存します。
+
+- [Content styles (CKEditor 5 v41.3.1)](https://ckeditor.com/docs/ckeditor5/41.3.1/installation/advanced/content-styles.html#the-full-list-of-content-styles)
+
+:::info
+Kurocoの管理画面が利用しているCKEditor 5のバージョンは、本記事執筆時点でv41.3.1です。  
+Kurocoのアップデートに伴いCKEditor 5のバージョンが変わることがありますが、content stylesの内容は大きく変わらない想定です。  
+v42.0.0以降のバージョンでは、CDNからcontent stylesのみを含む`ckeditor5-content.css`を取得することもできます。  
+例: `https://cdn.ckeditor.com/ckeditor5/48.5.0/ckeditor5-content.css`
+:::
+
+content-styles.cssのセレクタは、すべて`.ck-content`から始まります。  
+そのため、このCSSを読み込んでも、`ck-content`クラスの要素の外側にあるページのスタイルには影響しません。
+
+```css
+/* content-styles.cssの抜粋 */
+.ck-content .table {
+    margin: 0.9em auto;
+    display: table;
+}
+.ck-content .table table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px double hsl(0, 0%, 70%);
+}
+.ck-content .table table td,
+.ck-content .table table th {
+    min-width: 2em;
+    padding: .4em;
+    border: 1px solid hsl(0, 0%, 75%);
+}
+```
+
+### 2. フロントエンドにCSSを配置して読み込む
+
+保存したcontent-styles.cssをフロントエンドのプロジェクトに配置し、本文を表示するページで読み込みます。  
+[ファイルマネージャー](/ja/docs/management/file-manager/)にアップロードしてKurocoFilesのURLから読み込むこともできます。
+
+```html
+<link rel="stylesheet" href="/path/to/content-styles.css" type="text/css">
+```
+
+### 3. 本文をck-contentクラスの要素で囲む
+
+APIで取得したWYSIWYG項目の値を、`class="ck-content"`を付けた要素の中に出力します。
+
+```html
+<div class="ck-content">
+  <!-- APIで取得したWYSIWYG項目のHTMLをここに出力します -->
+</div>
+```
+
+Nuxt.jsの場合の例です。
+
+```markup
+<template>
+  <div v-if="response">
+    <h1>{{ response.details.subject }}</h1>
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div class="ck-content" v-html="response.details.ext_01"></div>
+  </div>
+</template>
+```
+
+:::caution
+`response.details.ext_01`の部分は、ご自身のコンテンツ定義のWYSIWYG項目に合わせて変更してください。
+:::
+
+### 4. 表示を確認する
+
+管理画面のWYSIWYGエディタで表や画像、文字サイズを設定したコンテンツを保存し、フロントエンドで表示します。  
+エディタ内の表示とフロントエンドの表示が一致していることを確認します。
+
+## 表示側ページのCSSとの競合を避けるには
+
+content-styles.cssを読み込んでも、表示側のページに`.table`や`.image`などの汎用的なクラス名を対象としたCSSがある場合、そのCSSも`ck-content`内の本文に適用されます。  
+content-styles.cssのセレクタ（例: `.ck-content .table`）は表示側ページの`.table`より詳細度が高いため、content-styles.cssが指定しているプロパティは上書きされません。  
+表示が崩れるのは、表示側ページのCSSだけが指定しているプロパティ（例: `width`、`margin-bottom`、`td`の`padding`や`border-top`）が本文に残るためです。
+
+本文のHTMLやクラス名を変更せずに競合を避けるには、以下の方法があります。
+
+### 個別に上書きする
+
+崩れている箇所に対して、`.ck-content`を先頭に付けたセレクタで打ち消すCSSを追加します。
+
+```css
+.ck-content .table table td,
+.ck-content .table table th {
+  border-top: 0;
+  vertical-align: top;
+}
+```
+
+対象が限られている場合に向いていますが、表示側ページのCSSが変わるたびに追従が必要です。
+
+### Shadow DOM内に描画する
+
+本文をShadow DOM内に描画し、その中でcontent-styles.cssを読み込みます。  
+表示側ページのセレクタはShadow DOM内の要素にマッチしないため、クラス名の重複による影響を受けません。  
+コンテンツの入力者がどのようなHTMLやクラス名を使う場合でも影響を受けないため、上書きするCSSの追従が不要になります。
+
+```html
+<div id="cms-content"></div>
+
+<script>
+  const host = document.getElementById('cms-content');
+  const root = host.attachShadow({ mode: 'open' });
+  root.innerHTML = `
+    <link rel="stylesheet" href="/path/to/content-styles.css">
+    <div class="ck-content">${html}</div>
+  `;
+</script>
+```
+
+:::caution
+`html`には、APIで取得したWYSIWYG項目の値を設定します。  
+フォントや文字色などの継承プロパティは表示側ページから引き継がれます。これも遮断したい場合は、Shadow DOM内のCSSに`:host { all: initial; }`を指定し、必要なフォント設定を`.ck-content`に対して指定します。
+:::
+
+:::note
+上記はKuroco固有の設定ではなく、フロントエンド側の実装で対応する内容です。  
+Kurocoの設定でWYSIWYGエディタが出力するクラス名を変更することはできません。
+:::
+
+## 管理画面のエディタと同じCSSを共用する
+
+フロントエンド用に独自のCSS（例: `.ck-content .style-button { ... }`）を追加した場合、同じCSSファイルをコンテンツ定義の[カスタマイズCSS]に設定すると、管理画面のWYSIWYGエディタ内にも同じスタイルが適用されます。  
+設定手順は[Kuroco管理画面のWYSIWYGエディタに任意のCSSを適用する](/ja/docs/tutorials/apply-css-to-a-kuroco-management-screen-wysiwyg-editor/)を参照してください。
+
+## 関連ドキュメント
+
+- [WYSIWYGエディタの使用方法](/ja/docs/reference/wysiwyg/)
+- [Kuroco管理画面のWYSIWYGエディタに任意のCSSを適用する](/ja/docs/tutorials/apply-css-to-a-kuroco-management-screen-wysiwyg-editor/)
+- [コンテンツ定義で利用できる拡張項目一覧（WYSIWYG）](/ja/docs/reference/list-of-extra-column-available-on-content/#wysiwyg)
+- [Iframely自動変換を利用するには？](/ja/docs/faq/how-to-auto-convert-iframes/)
+- [CKEditor 5 - Content styles](https://ckeditor.com/docs/ckeditor5/41.3.1/installation/advanced/content-styles.html)
 
 
 ---

@@ -731,7 +731,13 @@ APIのセキュリティに[Cookie]を設定します。
 
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/6fab130c21608aa66875a721a0c13cd5.png)
 
-資格情報を含むCORSリクエストでは、`CORS_ALLOW_ORIGINS`に`*`を使用せず、フロントエンドのOriginを指定します。また、サードパーティCookieの制限を避けるため、`www.example.com`と`api.example.com`のようにフロントエンドとKurocoのドメインを合わせます。
+サードパーティCookieの制限を避けるため、`www.example.com`と`api.example.com`のようにフロントエンドとKurocoのドメインを合わせます。
+
+:::danger
+Cookie認証では`CORS_ALLOW_CREDENTIALS`が必須のため、`CORS_ALLOW_ORIGINS`に`*`を指定しないでください。
+`*`を指定するとリクエスト元のOriginがそのまま許可されるため、**すべてのオリジンがCookieを伴うリクエストの送信とレスポンスの読み取りを許可されます。**
+フロントエンドのOriginを明示的に指定してください。
+:::
 
 ### `login_save`を指定してログインする
 

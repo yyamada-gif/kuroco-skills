@@ -11,15 +11,15 @@
 | `faq-admin.md` | FAQ / admin | 15 |
 | `faq-api.md` | FAQ / API | 18 |
 | `faq-api-error.md` | FAQ / api-error | 13 |
-| `faq-assessment.md` | FAQ / assessment | 8 |
+| `faq-assessment.md` | FAQ / assessment | 9 |
 | `faq-content.md` | FAQ / コンテンツ管理 | 27 |
 | `faq-contracts.md` | FAQ / contracts | 9 |
 | `faq-deploy.md` | FAQ / deploy | 3 |
 | `faq-domain.md` | FAQ / domain | 12 |
 | `faq-email.md` | FAQ / email | 9 |
 | `faq-email-form.md` | FAQ / email-form | 20 |
-| `faq-file.md` | FAQ / ファイル | 11 |
-| `faq-frontend.md` | FAQ / フロントエンド・KurocoFront | 27 |
+| `faq-file.md` | FAQ / ファイル | 12 |
+| `faq-frontend.md` | FAQ / フロントエンド・KurocoFront | 28 |
 | `faq-infrastructure.md` | FAQ / infrastructure | 4 |
 | `faq-login-session.md` | FAQ / login-session | 6 |
 | `faq-member.md` | FAQ / メンバー管理 | 5 |
@@ -37,7 +37,7 @@
 | `management-member.md` | 管理画面 / メンバー管理 | 15 |
 | `management-misc.md` | 管理画面 / その他 | 26 |
 | `management-operation-1.md` | 管理画面 / オペレーション | 17 |
-| `management-operation-2.md` | 管理画面 / オペレーション | 2 |
+| `management-operation-2.md` | 管理画面 / オペレーション | 4 |
 | `reference-api-1.md` | リファレンス / API | 5 |
 | `reference-api-2.md` | リファレンス / API | 2 |
 | `reference-api-3.md` | リファレンス / API | 4 |

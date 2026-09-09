@@ -2,8 +2,8 @@
 name: kuroco-frontend-integration
 metadata:
   author: Diverta inc.
-  version: "2.5.1"
-  lastUpdated: "2026-08-27"
+  version: "2.5.3"
+  lastUpdated: "2026-09-08"
 description: KurocoとVite / React / Nuxt.js / Next.jsなどフロントエンドフレームワークの統合パターン（SPA・SSG・SSRの実装）。SPA / SSGでのコンテンツ表示（SSR・ISRが必要な場合の公開先切り替えを含む）、ログイン・会員登録・認証状態管理（Cookie認証・動的アクセストークン）、サードパーティCookie問題の回避、XSS対策、公開先の決定（既定はKurocoFront、Vercel・Codex Sites指定時の確認事項）、KurocoFrontへのデプロイ（kuroco_front.json、GitHub連携、Admin MCP直接デプロイ）をカバー。フロントエンドからのKuroco連携、認証状態の管理、静的生成・動的ルート、デプロイ、公開先の選択の質問で使用。
 ---
 
@@ -288,13 +288,25 @@ KurocoFrontはKurocoが提供するフロントエンドホスティングサー
 
 **SPA（History APIでのクライアントルーティング）を配信するなら、`kuroco_front.json` の
 `rewrites` に `{"source": ".*", "destination": "/index.html"}` が必須**（無いとリロード・URL直打ち・共有リンクが404になる）。
-`source` を絞ると壊れる理由・`error_page` との関係を含めた推奨設定は
+`source` は `.*` 固定。ファイルが存在しないときだけリライトされるのは `source` が `.*` のときだけで、
+`^/.*$` など他の書き方では JS・CSS まで `index.html` に置き換わり白画面になる。
+`error_page` との関係を含めた推奨設定は
 [references/kuroco-front.md「SPA配信」](references/kuroco-front.md#spa配信履歴apiのクライアントルーティング)にまとめてある。
 
 `kuroco_front.json` の設定（rewrites / redirects / Basic認証 / IPアドレス制限）、
 **非公開デフォルト（ユーザーが公開を明示するまで robots.txt の `Disallow: /` ＋ Basic認証/IP制限をかけてデプロイする既定）**、GitHub連携デプロイ、
 Admin MCPからの直接デプロイ（`files-create_temp_upload_url` → `kuroco_front-deploy` → `kuroco_front-history`）の
 手順と制約は [references/kuroco-front.md](references/kuroco-front.md) を参照。
+
+### Admin MCP から直接デプロイするときの確認4点
+
+手順の全文は [references/kuroco-front.md「デプロイ方法」](references/kuroco-front.md#デプロイ方法)。
+ここに置くのは、間違えても `accepted` が返り、失敗がエラーにも履歴にも残らないことがある箇所だけ。
+
+- zipはビルド出力の**中身**をルートにする: `cd dist && zip -r ../dist.zip .`。アップロード前に `unzip -l` でルート直下に `index.html` と `kuroco_front.json` があることを確認する
+- `kuroco_front-deploy` の `accepted` はキュー投入の受領であり、成功ではない。反映には30秒〜数分かかる
+- 反映確認は `kuroco_front-history` の行と、公開URLのレスポンスヘッダー `x-rcms-hash`・`x-rcms-deploy` がその行の `hash` に対応することの両方
+- 10分経っても満たさなければ失敗。切り分けは [references/kuroco-front.md「反映されないときの見分け方」](references/kuroco-front.md#反映されないときの見分け方)
 
 ## 注意事項
 

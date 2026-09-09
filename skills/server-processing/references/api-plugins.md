@@ -87,6 +87,7 @@
 
 - `sslcert`と`sslkey`を使用する場合は両方必須です
 - `cache_time`はGET/HEADメソッドのみ有効です
+- `json_body`指定時は`Content-Type: application/json`が自動付与されるため、`headers`に`Content-Type`を重ねて指定する必要はありません（指定済みの場合はそちらが送信されます）
 - `dl_flg=1`の場合、レスポンスはS3にアップロードされURLが返されます
 
 ---

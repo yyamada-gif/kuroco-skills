@@ -453,7 +453,7 @@ Kurocoのデフォルト構成では登録可能ドメインが異なります �
 - `https://www.example.com` + `https://api.example.com`
 - `https://example.com` + `https://api.example.com`
 
-これによりCookieはファーストパーティ扱いとなり、デフォルトの `SameSite=Lax` で十分、Safari / Firefox の制限も対象外になります。
+これによりCookieはファーストパーティ扱いとなり、Safari / Firefox の制限も対象外になります。
 
 設定手順:
 

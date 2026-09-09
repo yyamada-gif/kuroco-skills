@@ -2694,7 +2694,7 @@ status_var | String | 削除の結果を格納するSmarty変数名
 
 ## rename_file
 
-ファイルを移動します。
+S3/GCS上のファイルを移動します。
 
 **属性**  
 
@@ -2702,10 +2702,16 @@ Param | Type | Description
 --- | --- | ---
 src_path | String | 移動元パス
 dest_path | String | 移動先パス
+status_var | String | 移動の結果を格納するSmarty変数名
+
+:::caution
+`src_path`と`dest_path`は、どちらもS3/GCS上のパスを指定します。ローカルに保存されるKurocoFiles（`files/user/`、`files/ltd/`）のファイルは移動できません。  
+パスは先頭の`/`を付けずに指定します。
+:::
 
 **記載例**    
 ```smarty
-{rename_file src_path=$src_path dest_path=$dest_path}
+{rename_file src_path="files/a/public/sample/67.png" dest_path="files/a/public/sample/moved/67.png" status_var="status"}
 ```
 
 ## replace

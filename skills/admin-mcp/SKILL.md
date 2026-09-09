@@ -2,8 +2,8 @@
 name: kuroco-admin-mcp
 metadata:
   author: Diverta inc.
-  version: "1.7.5"
-  lastUpdated: "2026-08-28"
+  version: "1.7.8"
+  lastUpdated: "2026-09-09"
 description: Kuroco Admin MCP（管理MCPサーバー）の接続設定・認証・ツール利用を支援する。AIエージェントからKurocoの管理操作を行う際の推奨手段で、OAuth 2.0 / CIMD認証、スコープ（mcp:admin / mcp:tools.all / mcp:tools.write / mcp:tools.read）と作業ごとに必要なレベル、whoamiによる実効権限の確認、Claude Code・Claude Web・ChatGPT・Codex CLIからの接続設定、部分更新（patch.カラム名による行単位の書き換え、base_hashによる楽観ロック）をカバー。MCP経由の管理操作、Issuer URLやprotected resource metadataの設定、大きなCSS/JS/テンプレートの一部だけの更新、MCPツールが見えない・権限不足で書き込めない等のトラブルシュートに使用。
 ---
 
@@ -89,8 +89,11 @@ POST https://<site_key>.g.kuroco.app/direct/rcms_api/admin_mcp/x/<module>[,<modu
 
 - **Issuer URL**: `https://<管理ドメイン>/direct/login/oauth_idp/<idp_id>`
   - 管理画面 **[Admin MCP 情報ページ]** または OAuth Authorization Server 編集画面に表示される
-- **CIMD（クライアント ID メタデータドキュメント / URL クライアント ID）** を有効化すると、
-  クライアント側での client_id / secret の手動設定が不要になる
+- **CIMD（クライアント ID メタデータドキュメント / URL クライアント ID）は既定で無効。**
+  有効化すると、クライアント側での client_id / secret の手動設定が不要になる。
+  **CIMD を使うクライアントは、無効のままだと認可要求が `invalid_client` で拒否される**
+  （詳細: `Unknown client_id. Client ID metadata documents are not enabled for this
+  authorization server.`）。有効化は OAuth Authorization Server 編集画面で行う
 - **Dynamic Client Registration (RFC 7591) は非対応。** CIMD を使わない場合、
   クライアントは管理画面で手動登録する
 - Protected Resource Metadata (RFC 9728) は認証不要で公開:
@@ -187,10 +190,13 @@ Admin MCP 用認可サーバーの権限は個別スコープ選択ではなく*
 **特権メタツール:**
 
 - `kuroco_front-generate_deploy_token` は `mcp:admin` スコープ必須
-- `rcms_api-generate_token` は `rcms_api/update` 権限が必要（＝`mcp:tools.all` 以上）。
+- `rcms_api_token-create` は `rcms_api/update` 権限が必要（＝`mcp:tools.all` 以上）。
   さらに `token_type: "privileged_static"` は**厳密な `mcp:admin` が必須**で、
   `mcp:tools.all` でも発行できない（発行されるトークンが接続側の上限を持たない
   常設の資格情報になるため）。`token_type: "static"` にはこの追加制約はない
+- `rcms_api_token-delete` も `rcms_api/update` 権限が必要。OAuth 接続で
+  `privileged_static` トークンを失効させる場合は**厳密な `mcp:admin` が必須**だが、
+  通常の `static` トークンは `mcp:tools.all` で失効できる
 
 **設定箇所:** 権限レベル・リソーススコープは **OAuth Authorization Server 編集画面**
 （`/management/external/memberregist_sso_oauth_idp_edit/`）で設定する。設定値と Issuer URL は
@@ -229,6 +235,11 @@ https://<site_key>.g.kuroco.app/direct/rcms_api/admin_mcp/x/topics_group_1,membe
   クライアント UI で URL を編集できない場合は、コネクタを削除して新規追加する
 - チーム利用や権限分離が必要な場合は、既定の `Admin MCP (default)` を変更せず
   用途ごとに専用の認可サーバーを作成する運用を推奨
+- **CLI の `mcp login` は利用者自身のローカル端末で実行する。** OAuth 認可コードフローは
+  実 TTY とブラウザ（コールバック待受）を必要とするため、エージェントのサンドボックス化された
+  シェルからは実行できない（`!` 経由も同様）。同一マシンなら `~/.claude.json` を共有するため、
+  認証完了後はエージェント側からも接続済みになる。ツール一覧はセッション開始時に読み込まれるので、
+  セッション途中で認証したサーバーのツールは新しいセッションを開始して使う
 
 CLI での例（OAuth の登録方式そのものは docs に従う）:
 
@@ -272,7 +283,10 @@ Admin MCP のヘッダー認証は `Authorization: Bearer`。コンテンツ API
 - **サイト全体に影響する設定変更はエージェントが確定しない。** 認可サーバーの設定変更や
   CIMD の有効化が必要な場合は、必要性を説明してユーザー自身に操作してもらう
 - **接続後は新しいタスクを開始して `whoami` を実行し**、接続先ホスト・実効スコープ・
-  読み書き権限・サイト固有の上限を確認してから作業に入る（[whoami による事前確認](#whoami-による事前確認)）
+  読み書き権限・サイト固有の上限を確認してから作業に入る（[whoami による事前確認](#whoami-による事前確認)）。
+  **セッションを作り直すと文脈が失われるクライアントでは、要件ヒアリングや設計に入る前に接続を終わらせる**
+  （会話上の合意がセッションごと失われるため）。どうしても途中で接続が必要になった場合は、
+  セッションを作り直す前に合意内容をファイルに書き出す
 - 作業に必要な**最小スコープの URL** を選ぶ（[構築作業に必要なスコープ](#構築作業に必要なスコープ)）
   - **担当者の責務で決める:**
 
@@ -528,6 +542,21 @@ topics の項目ではなくファイルマネージャーのツリー（`files/
 - `storage: "S3"` を付けるとサイトの S3 バケットの `files/temp/` に直接置かれる（GCS サイトでは不可）
 - 小さいファイル（16MB まで）はインライン data URI でも受理される
 
+### ファイルマネージャーからの一括ダウンロード（`file_manager-list` の `download: true`）
+
+ディレクトリ配下をまとめて取り出すときは、`file_manager-list` に `download: true` を付ける。一覧の代わりに、`directory` 配下（サブディレクトリ含む）を 1 本の zip にした一時 URL が返る。
+
+```json
+{ "storage": "kurocofiles_public", "directory": "docs/2026", "download": true }
+// → { "directory": "files/user/docs/2026/", "download": { "download_url": "...", "filename": "2026.zip", "size": 12345, "entries": 8, "expiration_unix": ... } }
+```
+
+- zip 内のエントリパスは `directory` からの相対パス。一覧に出ないもの（隠しファイル・フォルダ、閲覧制限で見えないフォルダ）は zip にも入らない
+- 上限はアップロードの zip 展開と同じ **1000 ファイル / 展開後 500MB**。超えるツリーは拒否されるので、サブディレクトリ単位で分けて取り出す
+- `download_url` の有効期限は **10 分**。発行したらすぐ取得する
+- 閲覧制限ファイル（`kurocofiles_private` / `cloud_private`）の中身を MCP から読める唯一の経路。`file_manager-list` が返す `url` は管理画面ログインが必要なので、エージェントからはこちらを使う
+- クラウドストレージも一時バケットも無いサイトでは一時 URL を発行できず、`download` は拒否される
+
 ---
 
 ## 管理画面: Admin MCP 情報ページ
@@ -556,10 +585,12 @@ topics の項目ではなくファイルマネージャーのツリー（`files/
 | `privileged_static` トークンが発行できない | 厳密な `mcp:admin` が必要（`mcp:tools.all` では不可）。スーパーユーザーでの再認可が要る |
 | 書き込みは成功するが反映されない | `whoami` の `permissions.approval_required` に該当モジュールがないか確認。承認ワークフロー待ちの可能性 |
 | audience 不一致でトークン拒否 | エンドポイント URL の末尾スラッシュ・パス表記がトークン発行時と厳密一致しているか確認 |
-| `rcms_api-generate_token` が権限エラー | `rcms_api/update` が要るため `mcp:tools.all` 以上。`privileged_static` はさらに `mcp:admin` が必要 |
+| `rcms_api_token-create` が権限エラー | `rcms_api/update` が要るため `mcp:tools.all` 以上。`privileged_static` はさらに `mcp:admin` が必要 |
 | `files/temp/...` の `file_id` が解決できない | プリサインド URL の期限切れ（10 分）、PUT 前に消費した、または別サイトで発行した `file_id`。URL を再発行して PUT からやり直す |
 | 認可サーバーが情報ページに出ない | 管理者が削除した認可サーバーは自動再作成されない。手動で再作成する |
 | OAuth のクライアント登録が通らない | 認可サーバーで CIMD（クライアント ID メタデータドキュメント）が有効か確認する。CIMD 非対応クライアントは手動クライアント登録が必要（Kuroco は DCR を実装していない）。クライアント別の対応は `../kuroco-docs/docs/reference-mcp-ai.md` の `mcp-client-configuration` を参照 |
+| `invalid_client` / `Client ID metadata documents are not enabled for this authorization server.` | 認可サーバーで CIMD が無効（**既定で無効**）。OAuth Authorization Server 編集画面で有効化してから、クライアント側で改めて認可し直す |
+| クライアントが「接続済み」と表示するのにツールが 0 件 | Kuroco の同意画面を通過していない可能性。**クライアント側の接続状態表示は認可完了を意味しないことがある**（同意前から「接続済み」と表示するクライアントがある）。同意画面で「許可」まで実行し、トークンが発行されてからツール一覧を取得し直す |
 | Codex から接続できない | ① 認可サーバーで CIMD が有効か ② スコープ付き URL（`/x/...`）を指定しているか ③ `~/.codex/config.toml` の `[mcp_servers.<name>.oauth]` に `client_id` が残っていないか（設定済みの client_id が優先され CIMD が使われない）。CIMD を使わない場合は手動クライアント登録が必要（Kuroco は DCR を実装していない） |
 
 ### 権限エラーの切り分け

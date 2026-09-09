@@ -905,9 +905,9 @@ Authenticatorによる2要素認証を利用するには、まずKurocoの管理
 
 #### ワンタイムパスワードの利用設定をする
 
-[環境設定] -> [サイト一覧]をクリックします。  
+[環境設定] -> [サイト管理]をクリックします。  
 
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/6e62d36fc06738d5bd8bde2772e0d807.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/cfe98777cabc7fcc2b02cb195f4e4c6e.png)
 
 ログインの項目のワンタイムパスワードを[利用する]に設定します。
 

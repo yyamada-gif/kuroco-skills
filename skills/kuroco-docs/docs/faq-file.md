@@ -10,6 +10,7 @@
 - ファイルの項目でファイル容量をレスポンスに追加するにはどうしたら良いですか？（`how-can-i-add-the-file-size-information-to-the-file-item-response`）
 - PDFファイルの表示やダウンロードを制限する方法はありますか？（`how-do-i-restrict-pdf-access-and-download`）
 - フロントエンドからファイルをアップロードしてコンテンツに関連づけるにはどうしたらよいですか？（`how-do-i-upload-image-and-manage-it`）
+- KurocoFiles（閲覧制限付き）のファイルをAPI経由で取得する方法はありますか？（`how-to-access-restricted-kurocofiles-with-file-access-token`）
 - Kuroco上にアップロードしたPDFファイルなどに含まれるテキストを検索するAPIを作成できますか？（`is-it-possible-to-create-an-api-to-search-the-contents-of-pdf-files-uploaded-to-kuroco`）
 - 閲覧権限のないファイルへアクセスした場合に任意のページにリダイレクトさせることはできますか？（`is-it-possible-to-redirect-to-any-page-when-accessing-files-in-the-ltd-directory`）
 - ファイルマネージャーで利用できるファイルの種類を教えてください（`what-file-formats-does-the-file-manager-support`）
@@ -256,6 +257,75 @@ PDFファイルのダウンロードや印刷制限のご要望はよくいた�
 ## 関連ドキュメント
 - [APIを使ったファイルのアップロードについて](/ja/docs/reference/uploading-files-using-the-api/)
 - [コンテンツのbulk_upsert APIで画像・ファイル項目の更新はできますか？](/ja/docs/faq/can-i-update-topics-files-using-bulk_upsert-api/)
+
+
+---
+
+# KurocoFiles（閲覧制限付き）のファイルをAPI経由で取得する方法はありますか？
+
+> 元ページ: `faq/how-to-access-restricted-kurocofiles-with-file-access-token` ｜ 公式ページ: https://kuroco.app/ja/docs/faq/how-to-access-restricted-kurocofiles-with-file-access-token/
+> 概要: Loginモデルのfile_access_tokenエンドポイントでファイルアクセストークンを取得し、ファイルURLのドメイン直後に t=トークン の形式で付与することで取得できます。
+
+KurocoFiles（閲覧制限付き）に配置されたファイル（`/files/ltd/` 配下）は、閲覧権限を持つ会員としてログインした状態でのみ取得できます。  
+フロントエンドやサーバーサイドのプログラムからHTTP経由で取得する場合は、Loginモデルの `file_access_token` エンドポイントで取得したファイルアクセストークンを、ファイルURLのドメイン直後に `t=<トークン>` の形式で付与してアクセスします。
+
+## 手順
+
+### 1. エンドポイントを作成する
+
+[API] -> 対象のAPI -> [追加]をクリックし、以下のエンドポイントを作成します。
+
+|用途|モデル|オペレーション|設定|
+| :--- | :--- | :--- | :--- |
+|ファイルアクセストークンの取得|Login|file_access_token|access_token_lifespan: トークンの有効秒数（省略時は300秒）|
+
+このエンドポイントはログイン中の会員として実行する必要があります。APIのセキュリティ設定に応じて、Cookie認証または動的アクセストークンで認証した状態でリクエストします。
+
+### 2. ファイルアクセストークンを取得する
+
+Login::file_access_token エンドポイントにGETリクエストすると、以下の形式でファイルアクセストークンが返却されます。
+
+```json
+{
+  "file_access_token": {
+    "value": "xxxxxx",
+    "expiresAt": 1700000000
+  }
+}
+```
+
+- `value`: ファイルアクセストークンの文字列です。
+- `expiresAt`: トークンの有効期限（UNIXタイムスタンプ）です。
+
+### 3. トークンを付与してファイルにアクセスする
+
+対象ファイルのURL（例: `https://xxxxxx.g.kuroco-img.app/files/ltd/...`）のドメイン直後に、手順2で取得した `value` を `t=<value>` の形式で挿入してHTTPリクエストします。この認証方法はAPIドメイン・Filesドメイン・管理画面ドメインのいずれでも同様に機能します。
+
+```text
+https://xxxxxx.g.kuroco-img.app/t=xxxxxx/files/ltd/documents/manual.pdf
+```
+
+## 注意事項
+
+- ファイルアクセストークンは、トークンを取得した会員としてファイルアクセスを認証するためのものです。ファイルマネージャーで対象フォルダに設定された閲覧権限（グループ制限）は、そのままトークンを取得した会員に対して適用されます。閲覧権限のないフォルダのファイルにはアクセスできません。
+- ファイルアクセストークンは `/files/ltd/` 配下のファイルアクセス専用です。他のAPIエンドポイントの認証には利用できません。
+- GCS/S3のプライベートストレージ（`/files/g/private/`、`/files/a/private/`）は、ファイルアクセストークンとは別の署名付きURLによる方式でアクセスします。そのため、本記事で説明している `t=` トークンを付与してアクセスする方法は利用できません。
+- 有効期限は `access_token_lifespan` で秒単位に設定できます。省略時は300秒（5分）です。有効期限を過ぎたトークンでのアクセスは認証エラーになります。
+- トークンにはログイン会員の権限が含まれます。`t=...` を付与したURLを不特定の利用者に共有すると、権限のない利用者にもファイルが閲覧される可能性があるため、必要な範囲でのみ利用してください。
+- ドメインによって画像最適化機能やキャッシュの挙動が異なります。詳細は[KurocoFilesディレクトリとドメインの使い分けについて](/ja/docs/tutorials/kurocofiles-directories-and-domains-usage/)を参照してください。
+
+:::caution
+コンテンツの拡張項目（ファイル）などで、APIレスポンスに自動で付与される `t=...` のトークンは、本記事のファイルアクセストークンとは別のものです。有効期限や仕様が異なるため、[ltdフォルダのファイルにつくt=・・・のURLの有効期限はいくつですか？](/ja/docs/faq/how-long-is-the-t-url-in-the-ltd-folder-valid/)をご確認ください。
+:::
+
+## 関連ドキュメント
+
+- [ファイルマネージャー](/ja/docs/management/file-manager/)
+- [KurocoFilesディレクトリとドメインの使い分けについて](/ja/docs/tutorials/kurocofiles-directories-and-domains-usage/)
+- [エンドポイントの設定について](/ja/docs/reference/endpoint-settings/)
+- [エンドポイントのパラメータについて](/ja/docs/reference/endpoint-parameters/)
+- [ltdフォルダのファイルにつくt=・・・のURLの有効期限はいくつですか？](/ja/docs/faq/how-long-is-the-t-url-in-the-ltd-folder-valid/)
+- [閲覧権限のないファイルへアクセスした場合に任意のページにリダイレクトさせることはできますか？](/ja/docs/faq/is-it-possible-to-redirect-to-any-page-when-accessing-files-in-the-ltd-directory/)
 
 
 ---

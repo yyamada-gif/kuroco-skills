@@ -86,6 +86,7 @@ KurocoFiles配下にCSSのフォルダを作成し、先ほど作成したCSSフ
 - [コンテンツ編集画面の表示を変更する](/ja/docs/tutorials/change-the-display-of-the-content-editing-page/)
 - [カスタムテンプレートの使い方を教えてください。](/ja/docs/faq/can-i-customize-the-display-of-tables-on-the-conten-editing-screen/)
 - [管理画面プラグインでCSSを複数ページに適用することはできますか？](/ja/docs/faq/is-it-possible-to-apply-css-to-multiple-pages-using-the-admin-panel-plugin/)
+- [管理画面プラグインで利用可能なスロット一覧](/ja/docs/reference/management-plugin-slot/)
 
 
 ---

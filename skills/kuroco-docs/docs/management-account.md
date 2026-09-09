@@ -117,7 +117,7 @@
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/f531e6bac3610a43ca50dbebf4e6bf50.png)
 
 #### 更新履歴
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/bc2047e6d589df8bddc43c0ccd2b7303.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/b4a772d1ef4847aabb00308c19f664a0.png)
 
 |項目 |説明 |
 | :--- | :--- |
@@ -200,7 +200,7 @@
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/8e4b085ee9a7d7473e637dc46d81e9e6.png)
 
 #### 項目説明
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/026813965a4e10dbdb606539cae52afd.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/1843d4380071026528a435d2b50420bf.png)
 
 |項目   |説明  |
 | :--- | :--- |
@@ -670,14 +670,17 @@ SendGridと契約・接続していてもKurocoのメール送信の料金は引
 
 ## サイト管理の項目説明
 ### 共通
-![Image from Gyazo](https://t.gyazo.com/teams/diverta/ea0df803077529c954b28331f809836c.png)
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/a9d2030128d81b84bd9c65e3533934cd.png)
 
 |項目名|説明|
 |:---|:---|
 |エクセル向けCSVダウンロード|チェックを入れると、数字のみのデータにタブが付きます。結果として`001`のようなデータをエクセルで開いた時に頭の0が消えることを防ぎます。|
 |ファイルマネージャで同名ファイルを検出する|チェックを入れると、ファイルマネージャで同名ファイルがアップロードされた場合に、[別名で保存][上書き][スキップ]のいずれかを選択するダイアログを表示します。|
+|Cookie認証APIのCSRF保護を強制する<VersionLabel version="BETA" />|チェックを入れると、Cookie認証APIへのPOSTリクエストに、自サイトまたはCORS設定で許可されたオリジンを示す`Origin`ヘッダーと、`Content-Type: application/json`または`X-Requested-With: XMLHttpRequest`ヘッダーの両方を必須にし、満たさないリクエストを403で拒否します。Admin APIへのPOSTリクエストにも同じ条件を適用します（許可オリジンは管理画面URLのみ）。 チェックを入れない場合は拒否せず検知ログのみ記録します。詳細は[脆弱性診断でCSRFの脆弱性が検出されました。Kurocoではどのように対応すればいいですか？](/ja/docs/faq/csrf-was-detected-in-a-vulnerability-assessment/)をご覧ください。|
 |最大ファイルアップロードサイズ|アップロードするファイルサイズバイト数（MB単位）を設定します。|
 |管理画面からの更新時に改行コードをLFに統一する|チェックを入れると、管理画面からの更新時に改行コードをLFに統一します。|
+|MCP動作改善フィードバック|チェックを入れると、AIクライアントがAdmin MCPツール自体の問題（説明の分かりにくさ、スキーマ不一致、想定外エラーなど）をKurocoへ報告するための専用ツールを公開します。送信前にユーザーの明示承認が必要です。詳細は[Admin MCP](/ja/docs/management/admin-mcp/)をご覧ください。|
+|Admin MCP サイト固有の指示|このサイト固有の運用ルールを、Admin MCPサーバーの説明（instructions）の末尾に追記します。多くのAIクライアントはこの説明をモデルのシステムプロンプトに取り込むため、ツールの定義だけでは伝わらない前提を記載できます。この指示でトークンの権限が広がることはありません。詳細は[Admin MCP](/ja/docs/management/admin-mcp/)をご覧ください。|
 
 ### フォーム
 ![Image from Gyazo](https://t.gyazo.com/teams/diverta/a7c3d18972d53e9d1e047a452a8a46ee.png)

@@ -7,6 +7,7 @@
 - 管理画面の操作ログは確認できますか？（`can-i-access-the-operational-logs-of-the-admin-panel`）
 - セキュリティチェックシートへの記入をお願いできますか？（`can-you-audit-my-security-checklist`）
 - 脆弱性検査のエビデンスを提供してもらうことはできますか？（`can-you-send-me-your-vulnerability-assessment-findings`）
+- 脆弱性診断でCSRFの脆弱性が検出されました。Kurocoではどのように対応すればいいですか？（`csrf-was-detected-in-a-vulnerability-assessment`）
 - KurocoはISMAP（政府情報システムのためのセキュリティ評価制度）に対応していますか？（`is-kuroco-ismap-compliant`）
 - セキュリティ対策の資料はありますか？（`materials-on-security-measures`）
 - 脆弱性診断で指摘を受けたのでどうすればいいか教えてください（`my-site-was-diagnosed-with-a-security-vulnerability`）
@@ -115,6 +116,262 @@ IPAの「[安全なウェブサイトの作り方](https://www.ipa.go.jp/securit
 - [脆弱性診断で指摘を受けたのでどうすればいいか教えてください](/ja/docs/faq/my-site-was-diagnosed-with-a-security-vulnerability/)
 - [VAddy](/ja/docs/management/vaddy/)
 - [VAddyと連携してAPIエンドポイントに対する自動診断を設定する。](/ja/docs/tutorials/integrating-with-vaddy/)
+- [セキュリティ](/ja/docs/about/security/)
+
+
+---
+
+# 脆弱性診断でCSRFの脆弱性が検出されました。Kurocoではどのように対応すればいいですか？
+
+> 元ページ: `faq/csrf-was-detected-in-a-vulnerability-assessment` ｜ 公式ページ: https://kuroco.app/ja/docs/faq/csrf-was-detected-in-a-vulnerability-assessment/
+> 概要: 回答はAPIのセキュリティ設定によって異なります。トークン認証ではCSRFは成立しません。Cookie認証でも、エンドポイントが受け付けないContent-Typeは処理される前に400で拒否されるため、`application/json`のみを受け付けるエンドポイントでは基本的に成立しません。form形式を受け付けるエンドポイントや、CORS設定でワイルドカードを指定している場合は設定の確認が必要です。
+
+CSRF(Cross-Site Request Forgery)は、利用者のブラウザが認証情報を自動的に付与してしまうことを利用した攻撃です。
+そのため、回答はAPIに設定しているセキュリティの種類によって異なります。
+
+| セキュリティ | 認証情報の送信方法 | CSRFの成立可否 |
+| :--- | :--- | :--- |
+| 静的アクセストークン | リクエストヘッダーに明示的に指定 | 成立しません |
+| 動的アクセストークン | リクエストヘッダーに明示的に指定 | 成立しません |
+| 特権付き静的トークン | リクエストヘッダーに明示的に指定 | 成立しません |
+| Cookie | ブラウザが自動的に付与 | 基本的に成立しません（[一部のエンドポイントは設定が必要](#cookie認証の場合)です） |
+| なし | 認証情報がありません | 成立しません（別の観点での確認が必要です） |
+
+セキュリティの種類については[APIセキュリティ](/ja/docs/management/api-security/)をご覧ください。
+
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/a4768b87dce7ff52860ef970f29112ac.png)
+
+:::note
+診断結果への回答を作成する前に、まず[CSRF対策が成立しない設定](#csrf対策が成立しない設定)をご確認ください。
+本記事で説明する対策はいずれもこれらの設定に依存しており、該当する場合は対策が働きません。
+:::
+
+## トークン認証（静的・動的・特権付き静的）の場合
+
+これらのセキュリティでは、アクセストークンをリクエストヘッダー`X-RCMS-API-ACCESS-TOKEN`に明示的に指定します。
+ブラウザが自動的に付与する情報ではないため、攻撃者のサイトから送信されたリクエストにトークンが含まれることはありません。
+
+したがって、**CSRFは構造的に成立しません。** 追加の設定は不要です。
+
+:::note
+静的アクセストークンをフロントエンドに埋め込んでいる場合、トークンは第三者も取得できる値です。他者になりすますCSRFは成立しませんが、トークンを取得した第三者がAPIを実行できる状態である点は、別の観点として確認してください。
+:::
+
+## Cookie認証の場合
+
+Cookie認証では、ブラウザがCookieを自動的に付与します。
+Kurocoが発行するCookieの属性は以下のとおりです。
+
+| 属性 | 値 |
+| :--- | :--- |
+| SameSite | API:`None` / 管理画面:`Strict` |
+| Partitioned | [CookieでPartitionedを利用する](/ja/docs/management/management-screen/#管理画面の項目説明)が有効な場合に付与されます（デフォルトで有効） |
+| HttpOnly | 付与されます |
+| Secure | 付与されます |
+
+Partitioned属性の設定は、[環境設定] -> [管理画面]の[CookieでPartitionedを利用する]で確認できます。
+
+APIのCookieは`SameSite=None`のため、**クロスサイトからのリクエストであってもCookieは送信されます。**
+
+ただし、KurocoのAPIエンドポイントは、そのエンドポイントが受け付けるContent-Typeをあらかじめ定義しており、それ以外のContent-Typeのリクエストは400で拒否します。
+HTMLフォームから送信できるContent-Typeは`application/x-www-form-urlencoded`・`multipart/form-data`・`text/plain`に限られるため、`application/json`のみを受け付けるエンドポイントでは、**攻撃者のサイトのフォームから送信されたリクエストは処理される前に拒否されます。**
+
+`text/plain`は、エンドポイントが受け付けるContent-Typeの設定が存在しないため、常に拒否されます。
+Content-Typeヘッダーを付与しないリクエストも、拒否されます。
+
+:::note
+ログアウトのエンドポイントのみ、Content-Typeヘッダーを付与しないリクエストを受け付けます。
+ログアウトはセッションを破棄する操作であり、他者になりすまして更新や情報の取得を行うものではないため、CSRFとしての影響は限定的です。
+:::
+
+これらの拒否は、[CSRF対策が成立しない設定](#csrf対策が成立しない設定)に該当する場合には働きません。
+
+:::info
+CookieのSameSite属性が`Strict`ではない点は、脆弱性診断で指摘を受けることがあります。この指摘に対する見解は[脆弱性診断で指摘を受けたのでどうすればいいか教えてください](/ja/docs/faq/my-site-was-diagnosed-with-a-security-vulnerability/)をご覧ください。
+:::
+
+### デフォルトの動作
+
+Cookie認証のAPIへのPOSTリクエストのうち、後述の条件を満たさないリクエストは、**デフォルトでは拒否されず、検知ログに記録されるのみです。**
+
+これは、CSRF保護を有効にする前に、影響を受けるリクエストをログから洗い出せるようにするためです。
+検知したリクエストは[アプリケーションログ](/ja/docs/management/application-log-list/)に記録されます。[キーワード]に`CsrfGuard`を入力して絞り込んでください。
+検知ログは、[Cookie認証APIのCSRF保護を強制する]を有効にした場合と同じ条件で記録されます。後述の`Origin`ヘッダーの条件も判定に含まれるため、有効化する前に`Origin`ヘッダーを送信しないクライアントが存在しないかをログから確認できます。<VersionLabel version="BETA" />
+
+リクエストを実際に拒否するには、次の設定を有効にします。
+
+### Cookie認証のCSRF保護を有効にする
+
+[環境設定] -> [サイト管理]をクリックし、[共通]の[Cookie認証APIのCSRF保護を強制する]にチェックを入れて保存します。
+この設定はサイト単位です。API単位では設定できないため、有効にするとサイト内のすべてのCookie認証APIに適用されます。
+
+設定画面の詳細は[サイト管理](/ja/docs/management/site-settings/)をご覧ください。
+
+有効にすると、Cookie認証のAPIへのPOSTリクエストは以下の**両方**を満たす必要があり、満たさないリクエストは403で拒否されます。<VersionLabel version="BETA" />
+
+| 条件 | 説明 |
+| :--- | :--- |
+| `Origin`ヘッダーが許可されたオリジンであること <VersionLabel version="BETA" /> | `Origin`ヘッダーが存在し、その値が「リクエストが到達したホストのhttpsオリジン」または「APIの`CORS_ALLOW_ORIGINS`に一致するオリジン」「管理画面URL」のいずれかに一致するリクエストです。 |
+| `Content-Type: application/json`または`X-Requested-With: XMLHttpRequest`を持つこと | HTMLフォームからは送信できないContent-Type、または付与できないリクエストヘッダーです。 |
+
+`Origin`はブラウザが設定するリクエストヘッダーで、ページ内のJavaScriptから偽装できません。
+そのため、自サイトのページからの送信と、攻撃者のサイトからの送信を区別できます。
+ブラウザはPOSTリクエストに必ず`Origin`ヘッダーを付与するため、`Origin`ヘッダーのないリクエストはブラウザから送信されたものではないと判断し、拒否します。<VersionLabel version="BETA" />
+
+`Origin`による判定は`CORS_ALLOW_ORIGINS`の指定内容に依存します。ワイルドカード(`*`)を指定している場合は、すべてのオリジンからの送信が許可されるため、CSRF保護として機能しません。サブドメインのワイルドカード(`https://*.example.com`)は、対象となるサブドメインすべてが管理下にある場合に限り有効です。<VersionLabel version="BETA" />
+
+:::caution
+次のリクエストも403で拒否されます。有効化する前に、[アプリケーションログ](/ja/docs/management/application-log-list/)の`CsrfGuard`の検知ログで、該当するリクエストがないことを確認してください。<VersionLabel version="BETA" />
+
+- 自サイトのページからの素の`<form>`送信（`Content-Type: application/json`でも`X-Requested-With: XMLHttpRequest`ヘッダー付きでもないため）
+- `Origin`ヘッダーを送信しないクライアントからのリクエスト（ネイティブアプリやサーバー間通信など）
+
+ブラウザ以外からAPIを呼び出す構成では、Cookie認証ではなくトークン認証を使用してください。
+:::
+
+Admin API（`/direct/rcms_api/admin_api/`）へのPOSTリクエストにも、[Cookie認証APIのCSRF保護を強制する]の設定に従って同じ条件が適用されます。許可されるオリジンは管理画面URLのみです。<VersionLabel version="BETA" />
+ブラウザ以外から管理画面のログインセッションでAdmin APIを呼び出すAIエージェントなどのクライアントは、`Origin`ヘッダーに管理画面URLを、あわせて`Content-Type: application/json`を自身で付与する必要があります。管理MCPサーバーはトークン認証のみのため対象外です。<VersionLabel version="BETA" />
+
+判定の対象は、Cookie認証のAPIへのPOSTリクエストのみです。GETは対象外です。
+また、bulkや非同期実行、Smartyの`api_internal`などKurocoが内部で発行するリクエストも対象外です。
+
+Kuroco標準のGETオペレーションに、データを更新するものはありません。
+ただし、`Api::request_api`（カスタム処理で作成したAPIの実行 (GETメソッド)）のように処理内容を利用者が定義するエンドポイントでは、その処理次第で更新が発生します。GETはCSRF保護の判定対象外で、Content-Typeによる拒否も働きません。
+更新を伴う処理は、`Api::request_api_post`（カスタム処理で作成したAPIの実行 (POSTメソッド)）などPOSTのエンドポイントに設定してください。`Api::proxy`・`Api::aggregate`でプロキシ先に副作用がある場合も同様です。
+
+### 正しいCORS設定が前提になる
+
+CORSは単体ではCSRF対策になりませんが、**本記事で説明する対策はいずれもCORS設定が正しいことを前提としています。**
+
+CORSはレスポンスの読み取りをブラウザ側で防ぐ仕組みであり、**リクエストがサーバーに到達すること自体は防ぎません。**
+プリフライトリクエストが発生しないリクエスト（HTMLフォームからの送信など）は、CORSで許可されていないオリジンからでもサーバーに到達します。
+
+一方で、**CORSで許可されたオリジンからは、プリフライトリクエストが発生するリクエストも到達します。**
+`Content-Type: application/json`によるCSRFの拒否は、攻撃者のオリジンがCORSで許可されていないために、そのプリフライトリクエストが失敗することで成立しています。
+
+:::danger
+`CORS_ALLOW_ORIGINS`にワイルドカード(`*`)を指定すると、Kurocoはリクエスト元のOriginをそのまま`Access-Control-Allow-Origin`に返します。
+`CORS_ALLOW_CREDENTIALS`とあわせて有効にしている場合、**すべてのオリジンが`Content-Type: application/json`のリクエストの送信とレスポンスの読み取りを許可されます。** オリジンによる境界がなくなるため、**Content-Typeによる拒否も[Cookie認証APIのCSRF保護を強制する]も機能しません。**
+`CORS_ALLOW_ORIGINS`には、許可するオリジンを明示的に指定してください。
+:::
+
+リクエストにCookieが付与されるかは[Partitioned属性](#partitioned属性による違い)にも依存します。組み合わせごとの結果は[CSRFの成立条件の一覧](#csrfの成立条件の一覧)をご覧ください。
+
+`CORS_ALLOW_ORIGINS`を明示的に指定している場合、CORS設定は次の3つの役割を持ちます。
+
+| 役割 | 内容 |
+| :--- | :--- |
+| レスポンスの保護 | 許可していないオリジンのページからは、レスポンスの内容を読み取れません。 |
+| プリフライトの拒否 | 許可していないオリジンからの、プリフライトリクエストが発生するリクエストを失敗させます。 |
+| CSRF保護の判定 | [Cookie認証APIのCSRF保護を強制する]が有効な場合の判定に利用されます。 |
+
+### Partitioned属性による違い
+
+CookieのPartitioned属性は、Cookieをトップレベルサイトごとに分割します。
+[CookieでPartitionedを利用する](/ja/docs/management/management-screen/#管理画面の項目説明)が有効な場合、**攻撃者のサイトのページからJavaScriptで送信したリクエストには、Cookieが付与されません。**
+
+一方、攻撃者のサイトのフォームから画面遷移を伴って送信されたリクエストには、遷移先のトップレベルサイトが一致するためCookieが付与されます。
+つまりPartitioned属性が有効な場合、攻撃者が送信できるのはHTMLフォームから送信できるContent-Typeに限られます。
+
+### CSRFの成立条件の一覧
+
+`application/json`のみを受け付けるエンドポイントについて、ここまでの条件をまとめます。
+
+| Partitioned属性 | `CORS_ALLOW_ORIGINS` | CSRFの成立可否 |
+| :--- | :--- | :--- |
+| 有効 | 明示的に指定 | 成立しません |
+| 有効 | ワイルドカード(`*`) | 成立しません（Cookieが付与されません） |
+| 無効 | 明示的に指定 | 成立しません（400で拒否） |
+| 無効 | ワイルドカード(`*`) | **成立します** |
+
+ワイルドカード(`*`)を指定している場合、攻撃者のサイトから送信した`Content-Type: application/json`のリクエストは[Cookie認証APIのCSRF保護を強制する]の通過条件も満たすため、**設定を有効にしても拒否されません。**
+Partitioned属性が有効な場合はCookieが付与されないため成立しませんが、CSRF対策がブラウザのCookie分割のみに依存する状態になります。ワイルドカード(`*`)は指定しないでください。
+このほか成立条件に影響する設定は[CSRF対策が成立しない設定](#csrf対策が成立しない設定)にまとめています。
+
+### form形式でリクエストを送信するエンドポイントについて
+
+エンドポイントが受け付けるContent-Typeは、[API]の設定で指定します。
+`multipart/form-data`や`application/x-www-form-urlencoded`を明示的に指定したエンドポイントでは、HTMLフォームから送信できるContent-Typeを受け付けるため、Content-Typeによる拒否が働きません。
+
+Cookie認証で公開している場合は[Cookie認証APIのCSRF保護を強制する]を有効にしてください。
+あわせて、正規のリクエストも`Content-Type: application/json`の条件を満たさないため、フロントエンドの実装で`X-Requested-With: XMLHttpRequest`ヘッダーを付与してください。
+
+`X-Requested-With`はHTMLフォームから付与できないリクエストヘッダーであるため、別オリジンのページから送信する場合はプリフライトリクエストが発生します。
+ヘッダーを付与する前に、送信元のオリジンを`CORS_ALLOW_ORIGINS`に登録してください。登録していないと、正規のリクエストが失敗します。
+
+:::note
+同一オリジンのページから送信する場合でも`X-Requested-With: XMLHttpRequest`ヘッダーが必要です。素の`<form>`からの送信は拒否されます。詳細は[Cookie認証のCSRF保護を有効にする](#cookie認証のcsrf保護を有効にする)をご覧ください。<VersionLabel version="BETA" />
+:::
+
+## セキュリティ「なし」の場合
+
+認証情報を用いないため、他者になりすますCSRFは成立しません。
+ただし、更新系のエンドポイントを認証なしで公開している場合は、CSRF以前に誰でも実行できる状態です。
+[APIセキュリティ](/ja/docs/management/api-security/)で適切なセキュリティを設定してください。
+
+## CORS設定の確認方法
+
+サイドバーより設定を確認したい[API]をクリックし、[CORS]をクリックします。
+`CORS_ALLOW_ORIGINS`に、許可するオリジンを明示的に指定します。ワイルドカード(`*`)は指定しないでください。
+
+![Image from Gyazo](https://t.gyazo.com/teams/diverta/cfaac5034eaf6833b1f5766a05a2fae7.png)
+
+```text
+https://example.com
+```
+
+ワイルドカード(`*`)は開発時の動作確認にのみ使用し、`http://localhost:8080`のような開発用のオリジンも、本番環境の設定からは削除してください。
+
+設定項目の詳細は[API](/ja/docs/management/api-list/#cors)をご覧ください。
+
+## CSRF対策が成立しない設定
+
+ここまでに説明した対策は、いずれも以下の設定に依存しています。
+Cookie認証のログインセッションは、`api_id`が異なる場合でもサイト内のCookie認証API間で共有されます。一方、CORS設定・セキュリティ・受け付けるContent-TypeはAPIごとの設定です。
+そのため、診断対象のAPIだけでなく、**サイト内のすべてのCookie認証APIについて**次の項目を確認してください。CORS設定は[CORS設定の確認方法](#cors設定の確認方法)で確認できます。
+
+| 設定 | 影響 | 対処 |
+| :--- | :--- | :--- |
+| `CORS_ALLOW_ORIGINS`にワイルドカード(`*`)を指定している | 攻撃者のサイトから`Content-Type: application/json`のリクエストを送信できます。Content-Typeによる拒否も[Cookie認証APIのCSRF保護を強制する]も機能せず、レスポンスの内容も読み取られます。 | 許可するオリジンを明示的に指定します。 |
+| `CORS_ALLOW_ORIGINS`に開発用のオリジン(`http://localhost:8080`など)が残っている | そのオリジンからのリクエストが許可されます。 | 本番環境の設定から削除します。 |
+| `CORS_ALLOW_ORIGINS`にサブドメインのワイルドカード(`https://*.example.com`)を指定しており、対象となるサブドメインすべてが管理下にあると確認できない | 管理外のサブドメインが攻撃者に利用可能な状態になると、`Origin`の条件を満たします。外部サービスに割り当てているサブドメインや、使用を終了して第三者が取得できる状態のサブドメインが該当します。<VersionLabel version="BETA" /> | 管理下にあるオリジンを完全一致で指定します。 |
+| `multipart/form-data`または`application/x-www-form-urlencoded`を受け付けるエンドポイントをCookie認証で公開している（[form形式でリクエストを送信するエンドポイントについて](#form形式でリクエストを送信するエンドポイントについて)を参照） | Content-Typeによる拒否が働きません。 | [Cookie認証APIのCSRF保護を強制する](#cookie認証のcsrf保護を有効にする)を有効にします。 |
+| ネイティブアプリやサーバー間通信など、`Origin`ヘッダーを送信しないクライアントからCookie認証のAPIを呼び出している | [Cookie認証APIのCSRF保護を強制する]を有効にすると、これらのリクエストが403で拒否されます。<VersionLabel version="BETA" /> | トークン認証に切り替えます。 |
+| GETのエンドポイントのカスタム処理で更新を行っている | GETはCSRF保護の判定対象外で、Content-Typeによる拒否も働きません。 | 更新を伴う処理はPOSTのエンドポイントに設定します。 |
+| [CookieでPartitionedを利用する]が無効になっている | 攻撃者のサイトのページからJavaScriptで送信したリクエストにも、Cookieが付与されます。 | 有効にします。 |
+
+## 診断結果への説明例
+
+以下の説明例は、[CSRF対策が成立しない設定](#csrf対策が成立しない設定)に該当しないことを確認したうえでご利用ください。
+
+### トークン認証を利用している場合
+
+> 本システムはAPIベースのヘッドレスCMSであるKurocoを採用しており、対象APIの認証にはアクセストークン方式を採用しています。
+> アクセストークンはリクエストヘッダーに明示的に指定する必要があり、ブラウザが自動的に付与する情報ではありません。
+> したがって、認証情報が自動送信されることを前提とするCSRFは成立しません。
+
+### Cookie認証を利用している場合
+
+`application/json`のみを受け付けるエンドポイントであれば、以下のように説明できます。
+
+> 本システムはAPIベースのヘッドレスCMSであるKurocoを採用しており、対象APIのエンドポイントは`Content-Type: application/json`のリクエストのみを受け付け、それ以外のContent-Typeは処理される前に400で拒否されます。
+> HTMLフォームから送信できるContent-Typeに`application/json`は含まれないため、攻撃者のサイトのフォームから送信されたリクエストは処理されません。
+
+`multipart/form-data`や`application/x-www-form-urlencoded`を受け付けるエンドポイントについては、[Cookie認証APIのCSRF保護を強制する]を有効にしたうえで、以下のように説明できます。<VersionLabel version="BETA" />
+
+> 本システムはAPIベースのヘッドレスCMSであるKurocoを採用しており、Cookie認証のAPIへのPOSTリクエストに対してCSRF保護を有効にしています。
+> POSTリクエストは「`Origin`ヘッダーが自サイトまたはCORS設定で許可したオリジンであること」と「`Content-Type: application/json`であること、または`X-Requested-With: XMLHttpRequest`ヘッダーを持つこと」の両方を満たす必要があり、満たさないリクエストは403で拒否されます。
+> `Origin`はブラウザが設定するリクエストヘッダーであり、攻撃者のページから偽装することはできません。また、HTMLフォームから送信できるContent-Typeに`application/json`は含まれず、`X-Requested-With`のような任意のリクエストヘッダーを付与することもできません。
+> したがって、攻撃者のサイトからのリクエストによるCSRFは成立しません。
+
+## 関連ドキュメント
+- [API セキュリティ](/ja/docs/management/api-security/)
+- [API](/ja/docs/management/api-list/)
+- [サイト管理](/ja/docs/management/site-settings/)
+- [脆弱性診断で指摘を受けたのでどうすればいいか教えてください](/ja/docs/faq/my-site-was-diagnosed-with-a-security-vulnerability/)
+- [脆弱性検査のエビデンスを提供してもらうことはできますか？](/ja/docs/faq/can-you-send-me-your-vulnerability-assessment-findings/)
+- [CORS設定の変更が反映されません。](/ja/docs/faq/i-changed-cors-but-it-is-not-reflected/)
+- [APIを使ったファイルのアップロードについて](/ja/docs/reference/uploading-files-using-the-api/)
 - [セキュリティ](/ja/docs/about/security/)
 
 
@@ -266,6 +523,7 @@ Kurocoのセキュリティ対策については、[営業資料](/ja/docs/about
 - [脆弱性診断・検査に関して教えてください](/ja/docs/faq/what-vulnerability-diagnostic-and-assessment-services-do-you-provide/)
 - [セキュリティ対策の資料はありますか？](/ja/docs/faq/materials-on-security-measures/)
 - [セキュリティチェックシートへの記入をお願いできますか？](/ja/docs/faq/can-you-audit-my-security-checklist/)
+- [脆弱性診断でCSRFの脆弱性が検出されました。Kurocoではどのように対応すればいいですか？](/ja/docs/faq/csrf-was-detected-in-a-vulnerability-assessment/)
 
 
 ---
