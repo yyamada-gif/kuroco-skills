@@ -62,6 +62,55 @@ KurocoはSmarty 2.6.28をベースとした独自拡張テンプレートエン�
 {assign var="array" value=$existingArray}
 ```
 
+**短縮代入 `{$name = "値"}` は使えない。** Smarty 3 以降の記法で、Kuroco の Smarty には無い。
+変数タグに続く引数はコンパイラが読まずに捨てるため、**エラーにならないまま代入だけが消える**。
+値を書き込むときは必ず `{assign}` / `{append}` を使う。
+
+```smarty
+{* NG: 保存も実行も成功するが、代入は起きない *}
+{$request = []}
+{$request.review_status = "pending"}
+
+{* OK *}
+{assign var="request.review_status" value="pending"}
+{append var="request" index="review_status" value="pending"}
+```
+
+#### 入れ子の配列への代入
+
+`{assign}` の `var` はドット区切りで書ける（Kuroco の拡張）。途中の配列が無ければ作られる。
+
+```smarty
+{* request.review_status に書く。request が未定義なら配列として作られる *}
+{assign var="request.review_status" value="pending"}
+
+{* 3階層まで *}
+{assign var="config.mail.from" value="info@example.com"}
+
+{* 末尾がドットなら連番で追加 *}
+{assign var="options." value="Option A"}
+{assign var="options." value="Option B"}
+```
+
+`{append}` は同じ書き込みを `index` で行う。キーが変数のときはこちらを使う。
+
+```smarty
+{append var="request" index=$key value=$val}
+```
+
+#### 型のキャスト
+
+`type` を指定すると値をキャストする（`str` / `int` / `bool` / `float` / `array`）。
+既定の `auto` はそのまま代入する。`nullable=true` は、`type` 指定時に空値を null として代入する。
+
+```smarty
+{assign var="count" value=$input type="int"}
+{assign var="data" value=$input type="array" nullable=true}
+```
+
+`value=[]` は**空配列にならない**（文字列 `"[]"` が入る）。空の配列から始めたいときは代入せず、
+`{assign var="request.key" ...}` / `{append var="request" ...}` で直接書き込む。
+
 ## セキュリティ設定
 
 Smarty_RCMSでは厳格なセキュリティ設定が適用されている。

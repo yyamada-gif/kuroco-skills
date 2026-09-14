@@ -20,7 +20,7 @@ AIエージェントはセッション開始時に各スキルの `name` と `de
 ## 実行方法
 
 ```bash
-# 全138ケース（8並列、所要15〜20分。136回のclaude呼び出しが発生する点に注意）
+# 全140ケース（8並列、所要15〜20分。140回のclaude呼び出しが発生する点に注意）
 python3 tests/skill-trigger/run_tests.py
 
 # 特定ケースのみ（description調整後の確認に）
@@ -32,16 +32,16 @@ python3 tests/skill-trigger/run_tests.py --resume
 
 終了コード: 全ケース成功で `0`、失敗ありで `1`。
 
-## ケース構成（cases.json・全138問）
+## ケース構成（cases.json・全140問）
 
 | IDプレフィックス | 対象スキル | 件数 |
 |------------------|-----------|------|
 | `a*` | api-content | 20 |
 | `b*` | app-builder | 9 |
 | `s*` | server-processing | 18 |
-| `f*` | frontend-integration | 18 |
+| `f*` | frontend-integration | 20 |
 | `d*` | kuroco-docs | 10 |
-| `m*` | admin-mcp | 10 |
+| `m*` | admin-mcp | 12 |
 | `t*` | content-structure（作成の質問） | 9 |
 | `c*` | content-structure（設計の質問） | 6 |
 | `u*` | auth-design | 6 |
@@ -61,7 +61,7 @@ python3 tests/skill-trigger/run_tests.py --resume
 
 ## 合否基準と調整方針
 
-- **128問（スキルあり）**: 期待スキルが最初に発動すること
+- **130問（スキルあり）**: 期待スキルが最初に発動すること
 - **対照10問**: いずれのスキルも発動しないこと（過剰発動の検出）
 - 失敗した場合は、質問に含まれる固有語が該当スキルの description に含まれているかを確認し、**固有名詞を description に追加**して該当ケースを `--only` で3回程度再実行して安定性を確認する
 - 同義語の羅列を復活させるのではなく、失敗の原因になった固有語だけをピンポイントで追加すること

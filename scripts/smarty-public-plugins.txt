@@ -142,6 +142,7 @@ write_file
 xmltojson
 zip
 # --- manual: ドキュメント未整備でも公開扱いと判断したもの。--docs-repo で再計算しても残す ---
+append
 assign_array_get
 assign_array_pick
 assign_array_unset

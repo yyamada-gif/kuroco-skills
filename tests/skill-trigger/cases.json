@@ -459,6 +459,20 @@
   ]
  },
  {
+  "id": "f19",
+  "prompt": "Kurocoサイトの画面デザインを整えたい",
+  "expect": [
+   "frontend-integration"
+  ]
+ },
+ {
+  "id": "f20",
+  "prompt": "Kurocoで生成した画面がAIっぽい見た目なので直したい",
+  "expect": [
+   "frontend-integration"
+  ]
+ },
+ {
   "id": "d01",
   "prompt": "Kurocoの公式ドキュメントで会員限定サイトの作り方を調べて",
   "expect": [

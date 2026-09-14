@@ -2,9 +2,9 @@
 name: kuroco-frontend-integration
 metadata:
   author: Diverta inc.
-  version: "2.5.3"
-  lastUpdated: "2026-09-08"
-description: KurocoとVite / React / Nuxt.js / Next.jsなどフロントエンドフレームワークの統合パターン（SPA・SSG・SSRの実装）。SPA / SSGでのコンテンツ表示（SSR・ISRが必要な場合の公開先切り替えを含む）、ログイン・会員登録・認証状態管理（Cookie認証・動的アクセストークン）、サードパーティCookie問題の回避、XSS対策、公開先の決定（既定はKurocoFront、Vercel・Codex Sites指定時の確認事項）、KurocoFrontへのデプロイ（kuroco_front.json、GitHub連携、Admin MCP直接デプロイ）をカバー。フロントエンドからのKuroco連携、認証状態の管理、静的生成・動的ルート、デプロイ、公開先の選択の質問で使用。
+  version: "2.6.0"
+  lastUpdated: "2026-09-14"
+description: KurocoとVite / React / Nuxt.js / Next.jsなどフロントエンドフレームワークの統合パターン（SPA・SSG・SSRの実装）。Kurocoサイトの画面設計・デザイン改善（定型的なAI表現の抑制、Kurocoとフロントの管理分担）、SPA / SSGでのコンテンツ表示（SSR・ISRが必要な場合の公開先切り替えを含む）、ログイン・会員登録・認証状態管理（Cookie認証・動的アクセストークン）、サードパーティCookie問題の回避、XSS対策、公開先の決定（既定はKurocoFront、Vercel・Codex Sites指定時の確認事項）、KurocoFrontへのデプロイ（kuroco_front.json、GitHub連携、Admin MCP直接デプロイ）をカバー。Kurocoサイトの画面デザインや見た目の修正、フロントエンドからのKuroco連携、認証状態の管理、静的生成・動的ルート、デプロイ、公開先の選択の依頼で使用。
 ---
 
 # Kuroco フロントエンド統合パターン
@@ -17,6 +17,7 @@ Kuroco HeadlessCMSとVite/Nuxt.js/Next.jsなどのフロントエンドフレー
 
 ## 目次
 
+- [画面設計とデザインの実装](#画面設計とデザインの実装) → 既定ルールは [references/design-defaults.md](references/design-defaults.md)
 - [公開先の決定](#公開先の決定)
 - [サポートフレームワーク](#サポートフレームワーク)
 - [環境設定](#環境設定)
@@ -25,6 +26,18 @@ Kuroco HeadlessCMSとVite/Nuxt.js/Next.jsなどのフロントエンドフレー
 - [Nuxt.js統合](#nuxtjs統合) → 詳細は [references/nuxt.md](references/nuxt.md)
 - [Next.js統合](#nextjs統合) → 詳細は [references/nextjs.md](references/nextjs.md)
 - [KurocoFront統合](#kurocofront統合) → 詳細は [references/kuroco-front.md](references/kuroco-front.md)
+
+## 画面設計とデザインの実装
+
+画面を新規実装・変更するときは、実装前に [デザインの既定ルール](references/design-defaults.md) を読み、適用する。既存画面の修正では、対象に関係する判断だけを見直す。
+
+### Kurocoとフロントの管理分担
+
+編集者が更新する本文・画像はKuroco、色・余白・配置はフロントで管理する。編集者が表示方法を選ぶ場合は、意味のある選択値をKurocoに持たせ、フロントの表示ルールに対応付ける。
+
+### 実画面の確認
+
+対象デバイスで表示・操作し、主要な情報と操作、長文・多件数・画像欠損、読み込み中・空・失敗の状態を確認する。崩れの原因に応じてレイアウト・共通部品・データの対応付けを修正し、同じ部品を使う画面も再確認する。画面を確認できなかった範囲は未検証として残す。
 
 ## 公開先の決定
 
@@ -288,9 +301,9 @@ KurocoFrontはKurocoが提供するフロントエンドホスティングサー
 
 **SPA（History APIでのクライアントルーティング）を配信するなら、`kuroco_front.json` の
 `rewrites` に `{"source": ".*", "destination": "/index.html"}` が必須**（無いとリロード・URL直打ち・共有リンクが404になる）。
-`source` は `.*` 固定。ファイルが存在しないときだけリライトされるのは `source` が `.*` のときだけで、
-`^/.*$` など他の書き方では JS・CSS まで `index.html` に置き換わり白画面になる。
-`error_page` との関係を含めた推奨設定は
+`source` は `.*` 固定で、`/assets/` 等を除外する規則を自分で書かない。`^/.*$` やアンカーなしの
+除外パターンなど他の書き方では、JS・CSS まで `index.html` に置き換わり白画面になる。
+壊れる理由と `error_page` との関係を含めた推奨設定は
 [references/kuroco-front.md「SPA配信」](references/kuroco-front.md#spa配信履歴apiのクライアントルーティング)にまとめてある。
 
 `kuroco_front.json` の設定（rewrites / redirects / Basic認証 / IPアドレス制限）、

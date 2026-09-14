@@ -4,6 +4,17 @@ app-builder は「サイトが存在し Admin MCP に接続済み」を前提と
 
 **このフローは Admin MCP を使わない。** サイトがまだ無い＝そのサイトの MCP も無いため、すべて公開APIへの `curl` で行う。接続は**経路の選択と Kuroco 側の前提（Step 2 の redirect URI 登録・Step 5 の CIMD 有効化）まで**をここで扱い、**クライアント別の細かい設定手順は書かない**——`/kuroco-admin-mcp` と `kuroco-docs` の `reference-mcp-ai.md` が正本で、クライアント（Claude Code / Claude Web・Desktop / ChatGPT / Codex CLI / Cursor など）ごとに異なり古くなるため。
 
+## 目次
+
+- [このフローをどこまでエージェントが実行できるか](#このフローをどこまでエージェントが実行できるかクライアント能力で分岐)
+- [Step 1: 情報収集](#step-1-情報収集)
+- [Step 2: サイト作成](#step-2-サイト作成siteregist)
+- [Step 3: セットアップ完了待機](#step-3-セットアップ完了待機setup_status)
+- [Step 4: 管理者アカウントのパスワード設定](#step-4-管理者アカウントのパスワード設定メールから)
+- [Step 5: Admin MCP 接続](#step-5-admin-mcp-接続)
+- [Step 6: セッションの引き継ぎ](#step-6-セッションの引き継ぎ)
+- [暫定回避策](#暫定回避策)
+
 ## このフローをどこまでエージェントが実行できるか（クライアント能力で分岐）
 
 「AIが全部やる」ではない。**実行できる範囲は利用クライアントの能力で変わる**。着手前に見極める。
