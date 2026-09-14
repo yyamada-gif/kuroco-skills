@@ -65,6 +65,24 @@ claude plugin install kuroco-skills@diverta-kuroco-skills
 
 プラグインのスキルは `kuroco-skills:` 名前空間で提供されます（例: `/kuroco-skills:admin-mcp`）。明示的に呼ばなくても、関連する依頼があればエージェントが自動的に選択します。
 
+#### Devin：プラグインとして導入（推奨）
+
+Devin は独自のプラグイン形式（`.devin-plugin/plugin.json`）を読むため、このリポジトリを GitHub から直接インストールできます。
+
+```bash
+devin plugins install diverta/kuroco-skills
+```
+
+プラグインのスキルは `kuroco-skills:` 名前空間で提供されます（例: `/kuroco-skills:kuroco-admin-mcp`）。明示的に呼ばなくても、関連する依頼があればエージェントが自動的に選択します。
+
+このプラグインには Kuroco Admin MCP サーバーの定義（サーバー名 `kuroco`）も含まれています。Devin 側の資格情報に `KUROCO_SITE_DOMAIN` としてサイトのドメイン（Kuroco 管理画面の Admin MCP 画面に表示されるエンドポイントURLのドメイン部分）を設定したうえで、次のコマンドで認可してください。Kuroco は動的クライアント登録(DCR)に対応していないため、`--oauth-client-id` には管理画面で確認できるクライアントIDを渡します。
+
+```bash
+devin mcp login kuroco --oauth-client-id "<CLIENT_ID>" --scopes mcp:tools.read,mcp:tools.write
+```
+
+接続先は全ツールのエンドポイントに固定されているため、読み取り専用で使う場合は `--scopes mcp:tools.read` で制限してください。
+
 #### 他のAIエージェント：skills CLI で導入
 
 [skills.sh](https://skills.sh/) の CLI は Claude Code / GitHub Copilot / Cursor / Cline など18以上のエージェントに対応し、1コマンドで導入できます。
@@ -232,6 +250,24 @@ If the install summary says `Run /reload-plugins to activate.`, run `/reload-plu
 
 Plugin skills are namespaced under `kuroco-skills:` (for example `/kuroco-skills:admin-mcp`). You don't need to invoke them explicitly — the agent selects them automatically when a request is relevant.
 
+#### Devin: install as a plugin (recommended)
+
+Devin reads its own plugin layout (`.devin-plugin/plugin.json`), so this repository installs straight from GitHub:
+
+```bash
+devin plugins install diverta/kuroco-skills
+```
+
+Plugin skills are namespaced under `kuroco-skills:` (for example `/kuroco-skills:kuroco-admin-mcp`). You don't need to invoke them explicitly — the agent selects them automatically when a request is relevant.
+
+The plugin also declares the Kuroco Admin MCP server (server name `kuroco`). Save your site's domain in Devin as the `KUROCO_SITE_DOMAIN` credential — the domain part of the endpoint URL shown on the Admin MCP screen in the Kuroco admin panel — then authorize with the command below. Kuroco does not support dynamic client registration (DCR), so pass the client ID shown in the admin panel to `--oauth-client-id`.
+
+```bash
+devin mcp login kuroco --oauth-client-id "<CLIENT_ID>" --scopes mcp:tools.read,mcp:tools.write
+```
+
+The plugin always connects to the all-tools endpoint, so keep it read-only with `--scopes mcp:tools.read`.
+
 #### Other AI agents: install with the skills CLI
 
 The [skills.sh](https://skills.sh/) CLI supports 18+ agents including Claude Code, GitHub Copilot, Cursor, and Cline, and installs in one command:
@@ -347,6 +383,9 @@ kuroco-skills/
 ├── .claude-plugin/
 │   ├── marketplace.json         # Marketplace catalog
 │   └── plugin.json              # Plugin metadata
+├── .devin-plugin/
+│   └── plugin.json              # Devin plugin manifest (skills + Admin MCP server)
+├── logo.svg                     # Brand mark for the Devin plugin card
 ├── .agents/skills/              # Codex discovery links to the canonical skills
 ├── skills/
 │   ├── kuroco-docs/             # Documentation search + official docs (bundled)
