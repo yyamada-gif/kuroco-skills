@@ -2,8 +2,8 @@
 name: kuroco-server-processing
 metadata:
   author: Diverta inc.
-  version: "1.5.1"
-  lastUpdated: "2026-08-27"
+  version: "1.5.2"
+  lastUpdated: "2026-09-11"
 description: Kurocoのサーバーサイド処理リファレンスと外部連携の方式設計。Smartyテンプレートの構文と151プラグイン（api、api_internal、sendmail、slack_post_message、ai_completionなど）、バッチ処理による定期実行、スパイダー、Webhook、コンテンツ・フォーム更新時のトリガー処理、トリガーメールアドレス、Slack・Chatwork・SendGrid・GitHub Actions連携、外部システム連携方式（直接呼び出し／プロキシ／取り込み）の選定とシークレット・OAuthトークン管理・タイムアウト制約をカバー。Smarty構文やプラグインの使い方、定期実行・自動化・外部通知・カスタム処理の実装、LINE・Slack・Instagram等の外部APIとの連携方式やAPIキーの隠し方の相談で使用。
 ---
 
@@ -45,8 +45,8 @@ KurocoのSmartyテンプレートで使用可能な全プラグインの完全�
 
 | プラグイン | 説明 | 例 |
 |-----------|------|-----|
-| `assign` | 変数代入 | `{assign var="name" value="値"}` |
-| `append` | 配列追加 | `{append var="arr" value="値"}` |
+| `assign` | 変数代入。`var` はドット区切りで入れ子の配列に書ける | `{assign var="request.status" value="pending"}` |
+| `append` | 配列追加。キーが変数のときはこちら | `{append var="arr" index=$key value="値"}` |
 | `json_decode` | JSONパース | `{$json\|json_decode:true}` |
 | `rcms_json_encode` | JSONエンコード | `{$arr\|@rcms_json_encode}` |
 
@@ -480,6 +480,7 @@ POSTのリクエストボディも `queries` で渡す（`body` というパラ�
 - **エラーハンドリング**: `errors` は空でも truthy にならないよう `|@count > 0` で判定し、`{logger}`（msg1〜msg4、各1KB以内）と `slack_post_message` で通知する（例: [references/examples.md](references/examples.md#エラーハンドリング)）
 - **途中終了のタグは無い。** 失敗時に「以降を実行しない」は、書き込み部分を `{if $status == 1}…{/if}`（または `errors|@count == 0`）で囲んで表現する
 - **動的なエンドポイントパス**はバッククォートで補間する。`{id}` のような波かっこをそのまま書くと Smarty タグとして解釈される
+- **短縮代入 `{$var = ...}` は無い。** 変数タグに続く引数はコンパイラが読まずに捨てるため、保存も実行も成功したまま代入だけが消える。値の書き込みは `{assign}` か `{append}` を使う（[references/syntax.md](references/syntax.md#変数代入)）
 
 ```smarty
 {api_internal endpoint="/rcms-api/3/product/update/`$row.topics_id`" method='POST' member_id=1 queries=$body var='res' status_var='ok'}

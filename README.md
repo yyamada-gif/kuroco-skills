@@ -21,7 +21,7 @@ Agent Skills は `SKILL.md` を中心としたファイルベースの標準仕�
 | **kuroco-docs** | Kuroco公式ドキュメントの検索・参照 |
 | **kuroco-app-builder** | アプリ・サイトをゼロから丸ごと構築するワークフロー（フロントエンド先行のモックファースト → コンテンツ定義 → API → 実データ接続 → デプロイ） |
 | **kuroco-api-content** | API設計・認証（Cookie/Token/StaticToken）、CORS、コンテンツCRUD、フィルタークエリ |
-| **kuroco-frontend-integration** | Vite/Nuxt.js/Next.js統合、SPA/SSG/SSR、認証実装、公開先の決定（既定はKurocoFront）、KurocoFrontデプロイ |
+| **kuroco-frontend-integration** | Kurocoサイトの画面設計・デザイン改善、Vite/Nuxt.js/Next.js統合、SPA/SSG/SSR、認証実装、公開先の決定（既定はKurocoFront）、KurocoFrontデプロイ |
 | **kuroco-server-processing** | Smartyプラグイン・構文リファレンス（151プラグイン）、バッチ処理、Webhook、トリガー、外部システム連携方式の設計（直接呼び出し／プロキシ／取り込み、シークレット・トークン管理） |
 | **kuroco-admin-mcp** | Admin MCP（管理MCPサーバー、AIエージェントからの管理操作の推奨手段）の接続設定、OAuth/CIMD認証、スコープ、ツール利用 |
 | **kuroco-content-structure** | コンテンツ構造の設計判断（TopicsGroup分割、マスタデータ表現、分類、ext_slug方針、JSON項目によるフィールド圧縮）と、MCPツールによるコンテンツ定義（TopicsGroup）の作成・フィールドタイプリファレンス |
@@ -160,6 +160,7 @@ Kurocoに関する質問をすると、関連するスキルが自動的に呼�
 **例：**
 - 「Kurocoでアプリを丸ごと作りたい」「まず動く画面を見せて」→ app-builder スキル
 - 「KurocoのAPIでログインを実装したい」→ api-content スキル
+- 「Kurocoサイトの画面デザインを整えたい」「AIっぽい見た目を直したい」→ frontend-integration スキル
 - 「Nuxt3でKurocoのコンテンツを表示したい」→ frontend-integration スキル
 - 「バッチ処理でSlack通知を送りたい」→ server-processing スキル
 - 「Smartyのプラグインの使い方を知りたい」→ server-processing スキル
@@ -187,7 +188,7 @@ Agent Skills is a filesystem-based standard built around `SKILL.md`, supported b
 | **kuroco-docs** | Search and reference Kuroco official documentation |
 | **kuroco-app-builder** | End-to-end app/site building workflow (frontend-first mock prototyping → content structures → API → live data → deploy) |
 | **kuroco-api-content** | API design, authentication (Cookie/Token/StaticToken), CORS, content CRUD, filter queries |
-| **kuroco-frontend-integration** | Vite/Nuxt.js/Next.js integration, SPA/SSG/SSR, authentication, hosting choice (KurocoFront by default), KurocoFront deployment |
+| **kuroco-frontend-integration** | Kuroco screen design and visual refinement, Vite/Nuxt.js/Next.js integration, SPA/SSG/SSR, authentication, hosting choice (KurocoFront by default), KurocoFront deployment |
 | **kuroco-server-processing** | Smarty plugin & syntax reference (151 plugins), batch processing, webhooks, triggers, external-system integration design (direct call / proxy / ingestion, secret & token management) |
 | **kuroco-admin-mcp** | Admin MCP server (recommended way for AI agents to perform admin operations): connection setup, OAuth/CIMD authentication, scopes, tool usage |
 | **kuroco-content-structure** | Content structure design decisions (TopicsGroup splitting, master-data modeling, category/tag/relation choice, ext_slug policy, JSON-field compression) followed by Content Structure (TopicsGroup) creation via MCP tool, field type reference |
@@ -326,6 +327,7 @@ When you ask about Kuroco, the relevant skills are invoked automatically.
 **Examples:**
 - "I want to build a whole app on Kuroco" / "Show me a working prototype first" → app-builder skill
 - "I want to implement login with Kuroco API" → api-content skill
+- "I want to refine my Kuroco site's screen design" / "I want to fix an AI-looking design" → frontend-integration skill
 - "I want to display Kuroco content with Nuxt3" → frontend-integration skill
 - "I want to send Slack notifications from batch processing" → server-processing skill
 - "I want to know how to use Smarty plugins" → server-processing skill
@@ -350,7 +352,7 @@ kuroco-skills/
 │   ├── kuroco-docs/             # Documentation search + official docs (bundled)
 │   ├── app-builder/             # End-to-end app building workflow (frontend-first)
 │   ├── api-content/             # API patterns + Content CRUD
-│   ├── frontend-integration/    # Vite/Nuxt/Next.js integration + hosting choice + KurocoFront deployment
+│   ├── frontend-integration/    # Screen design + Vite/Nuxt/Next.js integration + hosting + deployment
 │   ├── server-processing/       # Smarty plugin reference + Batch & webhook + external integration design
 │   ├── admin-mcp/               # Admin MCP connection, OAuth/CIMD, scopes
 │   ├── content-structure/       # Content structure design → creation via MCP
