@@ -2,7 +2,7 @@
 name: kuroco-desktop-upload-setup
 metadata:
   author: Diverta inc.
-  version: "1.0.3"
+  version: "1.0.4"
   lastUpdated: "2026-09-25"
 description: Claude.ai DesktopからKurocoFrontへ直接デプロイするための接続準備を行う追加スキル。対象サイトの一時保存先への通信確認、利用者への組織設定の操作案内、サイト構築用の新しい会話への引き継ぎを扱う。Claude.ai DesktopでKurocoのサイト構築を始める前の接続準備、またはその引き継ぎを受けた構築会話で使用する。
 ---
@@ -10,6 +10,10 @@ description: Claude.ai DesktopからKurocoFrontへ直接デプロイするため
 # Claude.ai Desktop専用の接続準備パッチ
 
 このスキルは既存のkuroco-app-builderとkuroco-frontend-integrationに追加して使う。既存スキルのファイルを書き換えず、Claude Code、Codex、Claude.ai Webや他の実行環境へ自動適用しない。
+
+## コネクタが未接続の場合
+
+最初に[接続時の短い案内](references/connector-guidance.md)を読む。利用者には、Kuroco側のCIMD設定、Claude側のコネクタ登録、今回の作業に必要な権限の順で案内する。人間の操作待ちでは、その操作と完了後の一言だけを伝えて停止する。設計表、仮定、採点、中間報告、技術用語の講義を添えない。
 
 ## 準備会話と構築会話を分ける
 
