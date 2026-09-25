@@ -1,5 +1,5 @@
 ---
-name: kuroco-claudeai-desktop-setup
+name: kuroco-desktop-upload-setup
 metadata:
   author: Diverta inc.
   version: "1.0.0"

@@ -115,7 +115,7 @@ git clone https://github.com/diverta/kuroco-skills.git .claude/skills/kuroco-ski
 
 #### claude.ai
 
-Claude.ai DesktopからKurocoFrontへ直接デプロイする場合は、追加スキル [kuroco-claudeai-desktop-setup](skills/claudeai-desktop-setup/SKILL.md) で先に接続を準備します。準備用の会話で対象サイトと通信状況を確認し、必要な設定を済ませてから、引き継ぎ文を構築用の新しい会話に貼ります。既存の構築スキルと組み合わせて使います。配布ZIPはリリース後に `kuroco-claudeai-desktop-setup.zip` として添付されます。
+Claude.ai DesktopからKurocoFrontへ直接デプロイする場合は、追加スキル [kuroco-desktop-upload-setup](skills/desktop-upload-setup/SKILL.md) で先に接続を準備します。準備用の会話で対象サイトと通信状況を確認し、必要な設定を済ませてから、引き継ぎ文を構築用の新しい会話に貼ります。既存の構築スキルと組み合わせて使います。配布ZIPはリリース後に `kuroco-desktop-upload-setup.zip` として添付されます。
 
 
 **設定 → 機能（Settings → Features）** からスキルを zip でアップロードします。ファイル作成・コード実行が有効な Pro / Max / Team / Enterprise プランで利用できます。アップロードしたカスタムスキルはユーザー単位で、組織全体への配布や集中管理はできません。
@@ -303,7 +303,7 @@ git clone https://github.com/diverta/kuroco-skills.git .claude/skills/kuroco-ski
 
 #### claude.ai
 
-For direct KurocoFront deployments from Claude.ai Desktop, use the additional [kuroco-claudeai-desktop-setup](skills/claudeai-desktop-setup/SKILL.md) skill first. Check the target site and network access in a preparation chat, complete any required settings, then paste the handoff into a new building chat. Use this alongside the existing building skills. The release workflow will package it as `kuroco-claudeai-desktop-setup.zip`.
+For direct KurocoFront deployments from Claude.ai Desktop, use the additional [kuroco-desktop-upload-setup](skills/desktop-upload-setup/SKILL.md) skill first. Check the target site and network access in a preparation chat, complete any required settings, then paste the handoff into a new building chat. Use this alongside the existing building skills. The release workflow will package it as `kuroco-desktop-upload-setup.zip`.
 
 
 Upload skills as zip files under **Settings → Features**. Available on Pro, Max, Team, and Enterprise plans with file creation / code execution enabled. Uploaded custom skills are per-user; they cannot be distributed or centrally managed organization-wide.
